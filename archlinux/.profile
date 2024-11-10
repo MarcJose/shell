@@ -105,9 +105,10 @@ GR_PREFS_PATH="${XDG_CONFIG_HOME}/gnuradio"
 GTK2_RC_FILES="${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
 GTK_RC_FILES="${XDG_CONFIG_HOME}/gtk-1.0/gtkrc"
 GVIMINIT='let $MYGVIMRC="${XDG_CONFIG_HOME}/vim/gvimrc" | source ${MYGVIMRC}'
-HISTFILE="${XDG_STATE_HOME}/bash/history"
-HISTFILE="${XDG_STATE_HOME}/history/history"
-HISTFILE="${XDG_STATE_HOME}/zsh/history"
+# Should be defined in the shell config
+#HISTFILE="${XDG_STATE_HOME}/bash/history"
+#HISTFILE="${XDG_STATE_HOME}/history/history"
+#HISTFILE="${XDG_STATE_HOME}/zsh/history"
 HOUDINI_USER_PREF_DIR="${XDG_CACHE_HOME}/houdini__HVER__"
 ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
 IMAPFILTER_HOME="${XDG_CONFIG_HOME}/imapfilter"
@@ -285,8 +286,10 @@ export FZF_DEFAULT_COMMAND="find . -type f -not -path '*/\.git/*' -not -path '*/
 export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
 export FZF_ALT_T_COMMAND="find . -type d -not -path '*/\.git/*' -not -path '*/\.terraform/*'"
 
-# Set default umask
-umask 027
+# Set umask for better security
+# Files: 600 (rw-------)
+# Directories: 700 (rwx------)
+umask 077
 
 # Add private bins to path
 if [ -d "${HOME}/bin" ]; then
@@ -350,8 +353,8 @@ _fzf_comprun() {
   local command=$1
   shift
 
-  case "${command}" in 
-    cd)           fzf --preview 'ls -lah {} | head 100' "$@";; 
+  case "${command}" in
+    cd)           fzf --preview 'ls -lah {} | head 100' "$@";;
     export|unset) fzf --preview "eval 'echo \$'{}" "$@";;
     ssh)          fzf --preview 'dig {}' "$@";;
     *)            fzf --preview 'bat -n -f -r :500 {} ' "$@";;
@@ -447,10 +450,10 @@ fif() {
     echo "Need a string to search for!"
     return 1
   fi
-  
+
   local file
   file=$(find . -type f -not -path '*/\.git/*' -not -path '*/\.terraform/*' -exec grep -l "$1" {} \; | fzf --preview "grep -n -C 3 '$1' {}")
-  
+
   if [ -n "$file" ]; then
     ${EDITOR:-vim} "$file"
   fi
@@ -601,7 +604,7 @@ tf_plan() {
    # Check for workspace
    local workspace
    workspace=$(terraform workspace show)
-   
+
    # Check for changes in files
    local changes
    changes=$(git status -s)
@@ -616,10 +619,10 @@ tf_plan() {
    fi
 
    echo "Creating plan for workspace: $workspace"
-   
+
    # Create dated plan file
    local plan_file="tfplan_${workspace}_$(date +%Y%m%d_%H%M%S)"
-   
+
    # Run plan and store output
    local plan_output
    plan_output=$(terraform plan -out="$plan_file" 2>&1)
@@ -628,11 +631,11 @@ tf_plan() {
    if [ $plan_exit -eq 0 ]; then
        echo "$plan_output"
        echo "Plan saved to: $plan_file"
-       
+
        # Show plan summary
        echo "Plan summary:"
        terraform show "$plan_file" | grep -E '^\s*[~+-]'
-       
+
        # Optionally view full plan
        echo "View full plan? (y/N)"
        read -r response
@@ -678,11 +681,11 @@ tf_destroy() {
    # Check for workspace
    local workspace
    workspace=$(terraform workspace show)
-   
+
    echo "WARNING: You are about to destroy infrastructure in workspace: $workspace"
    echo "Type the workspace name to confirm: "
    read -r confirmation
-   
+
    if [ "$confirmation" != "$workspace" ]; then
        echo "Abort: Workspace name does not match"
        return 1
@@ -700,10 +703,10 @@ tf_destroy() {
    fi
 
    echo "Creating destroy plan..."
-   
+
    # Create dated destroy plan file
    local destroy_plan="tfdestroy_${workspace}_$(date +%Y%m%d_%H%M%S)"
-   
+
    # Create destroy plan first
    local plan_output
    plan_output=$(terraform plan -destroy -out="$destroy_plan" 2>&1)
@@ -712,11 +715,11 @@ tf_destroy() {
    if [ $plan_exit -eq 0 ]; then
        echo "$plan_output"
        echo "Destroy plan saved to: $destroy_plan"
-       
+
        # Show resources to be destroyed
        echo "Resources to be destroyed:"
        terraform show "$destroy_plan" | grep -E '^\s*-'
-       
+
        echo "Review the destroy plan? (Y/n)"
        read -r review_response
        if [ "$review_response" != "n" ] && [ "$review_response" != "N" ]; then
@@ -725,7 +728,7 @@ tf_destroy() {
 
        echo "Proceed with destroy? Type 'destroy' to confirm: "
        read -r destroy_confirmation
-       
+
        if [ "$destroy_confirmation" = "destroy" ]; then
            echo "Executing destroy plan..."
            terraform apply "$destroy_plan"
@@ -840,15 +843,15 @@ alias full-scan='sudo nmap -p 1-65535 -sT -sU -A -sV'
 if command -v bat >/dev/null 2>&1; then
     # If bat is available, use it
     # Find and view with bat
-    alias bf='bat $(fzf)'  
+    alias bf='bat $(fzf)'
     # Browse with bat preview
-    alias baf='fzf --preview "bat --style=numbers --color=always {}"'  
+    alias baf='fzf --preview "bat --style=numbers --color=always {}"'
 else
     # Fallback to cat
     # Find and view with cat
-    alias bf='cat $(fzf)'  
+    alias bf='cat $(fzf)'
     # Browse with cat preview
-    alias baf='fzf --preview "cat {}"'  
+    alias baf='fzf --preview "cat {}"'
 fi
 ## Package manager integration
 alias fsearch='sudo pacman -Fy; pacman -Slq | fzf --multi --preview "cat <(pacman -Si {1}) <(pacman -Fl {1} | awk "{print \$2}")"'
@@ -856,24 +859,24 @@ alias finstall='sudo pacman -Fy; pacman -Slq | fzf --multi --preview "cat <(pacm
 alias fremove='pacman -Qq | fzf --multi --preview "pacman -Qi {1}" | xargs -ro sudo pacman -Rns'
 alias funinstall='pacman -Qq | fzf --multi --preview "pacman -Qi {1}" | xargs -ro sudo pacman -Rns'
 ## Find and edit
-alias fvi='vi $(fzf)' 
-alias fvim='vim $(fzf)'  
-alias fnano='nano $(fzf)' 
-alias fedit='${EDITOR:-vim} $(fzf)' 
+alias fvi='vi $(fzf)'
+alias fvim='vim $(fzf)'
+alias fnano='nano $(fzf)'
+alias fedit='${EDITOR:-vim} $(fzf)'
 ## Find and open with default app
-alias fopen='xdg-open $(fzf)'      
+alias fopen='xdg-open $(fzf)'
 ## Interactive cd
-alias fcd='fcd'  
+alias fcd='fcd'
 ## History search
 alias fhistory='history | fzf | cut -c8-'
 ## Find and kill process
-alias fkill='ps aux | fzf | awk "{print \$2}" | xargs kill -9'  
+alias fkill='ps aux | fzf | awk "{print \$2}" | xargs kill -9'
 ## Git: Add
-alias gadd='gadd'  
+alias gadd='gadd'
 ## Git: Checkout branch
-alias gcheckout='git branch | fzf | xargs git checkout'  
+alias gcheckout='git branch | fzf | xargs git checkout'
 ## Git: Log
-alias glog='git log --oneline | fzf --preview "git show {+1}"'  
+alias glog='git log --oneline | fzf --preview "git show {+1}"'
 ## aws-cli integration
 alias awsp='aws_profile'          # Select AWS profile
 alias awsr='aws_region'           # Select AWS region
