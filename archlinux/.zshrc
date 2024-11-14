@@ -4,11 +4,8 @@
 #------------------------------------------------------------------------------
 # Initial Setup and Error Handling
 #------------------------------------------------------------------------------
-# Set umask for better security
-# Files: 600 (rw-------)
-# Directories: 700 (rwx------)
-umask 077
-
+# Set umask for better security (files: 644, dirs: 755)
+umask 022
 
 #------------------------------------------------------------------------------
 # Basic Configuration
@@ -30,26 +27,27 @@ umask 077
 . <(fzf --zsh)
 # Enable fish-like autosuggestions based on command history
 . /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)  # Use both history and completion for suggestions
-ZSH_AUTOSUGGEST_USE_ASYN=true                  # Enable async mode for better performance
+# Use both history and completion for suggestions
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+# Enable async mode for better performance
+ZSH_AUTOSUGGEST_USE_ASYN=true
 
 
 #------------------------------------------------------------------------------
 # History Configuration
 #------------------------------------------------------------------------------
-# Set history file location and size
-HISTSIZE=10000                                    # Number of commands loaded into memory
-SAVEHIST=10000                                    # Number of commands stored in the zsh history file
-HISTFILE="${XDG_CACHE_HOME}/zsh/history"          # History file location
-# Create history directory if it doesn't exist
-[[ ! -d "${XDG_CACHE_HOME}/zsh" ]] && mkdir -p "${XDG_CACHE_HOME}/zsh"
-# History options
-setopt EXTENDED_HISTORY         # Record timestamp of command in HISTFILE
-setopt HIST_IGNORE_DUPS         # Don't save duplicate commands in history
-setopt HIST_REDUCE_BLANKS       # Remove unnecessary whitespace from commands
-setopt HIST_IGNORE_SPACE        # Don't save commands starting with space
-setopt SHARE_HISTORY            # Share history between all sessions
-setopt INC_APPEND_HISTORY       # Add commands to HISTFILE in order of execution
+# Record timestamp of command in HISTFILE
+setopt EXTENDED_HISTORY
+# Don't save duplicate commands in history
+setopt HIST_IGNORE_DUPS
+# Remove unnecessary whitespace from commands
+setopt HIST_REDUCE_BLANKS
+# Don't save commands starting with space
+setopt HIST_IGNORE_SPACE
+# Share history between all sessions
+setopt SHARE_HISTORY
+# Add commands to HISTFILE in order of execution
+setopt INC_APPEND_HISTORY
 
 
 #------------------------------------------------------------------------------
@@ -66,9 +64,12 @@ setopt CORRECT
 # Enable advanced pattern matching
 setopt EXTENDED_GLOB
 # Additional behavior improvements
-setopt INTERACTIVE_COMMENTS      # Allow comments in interactive shells
-setopt HASH_LIST_ALL            # Hash entire command path first
-setopt NOTIFY                   # Report status of background jobs immediately
+# Allow comments in interactive shells
+setopt INTERACTIVE_COMMENTS
+# Hash entire command path first
+setopt HASH_LIST_ALL
+# Report status of background jobs immediately
+setopt NOTIFY
 
 
 #------------------------------------------------------------------------------
@@ -212,8 +213,10 @@ setopt PUSHD_MINUS
 setopt prompt_subst
 autoload -Uz vcs_info
 # Configure VCS information format
-zstyle ':vcs_info:*' actionformats '%b|%a'  # Branch and action
-zstyle ':vcs_info:*' formats '%b'           # Branch only
+# Branch and action
+zstyle ':vcs_info:*' actionformats '%b|%a'
+# Branch only
+zstyle ':vcs_info:*' formats '%b'
 zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b:%r'
 zstyle ':vcs_info:*' enable git cvs svn
 # VCS information wrapper function
@@ -243,7 +246,7 @@ __record_time_preexec() {
 add-zsh-hook preexec __record_time_preexec
 # Build prompt with status, date, username, VCS info, and execution time
 __build_prompt() {
-  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__vcs_info_wrapper)$(__cmd_exec_time): "
+  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][$(__cmd_exec_time)][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__vcs_info_wrapper): "
   RPROMPT='%B%F{cyan}%2d%f%b'
 }
 # Update prompt before each command
@@ -266,12 +269,6 @@ precmd() {
 [ -f /usr/bin/terraform ] && complete -o nospace -C /usr/bin/terraform terraform
 # Enable OpenTofu completion if installed
 [ -f /usr/bin/tofu ] && complete -o nospace -C /usr/bin/tofu tofu
-
-
-#------------------------------------------------------------------------------
-# Load local configurations
-#------------------------------------------------------------------------------
-[ -f ~/.zshrc.local ] && . ~/.zshrc.local
 
 
 #------------------------------------------------------------------------------
