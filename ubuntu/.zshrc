@@ -13,20 +13,20 @@ umask 022
 # Source profile file for environment variables and basic setup
 . ~/.profile
 # Enable command-not-found suggestion functionality
-. /usr/share/doc/pkgfile/command-not-found.zsh
+. /etc/zsh/command-not-found.zsh
 
 
 #------------------------------------------------------------------------------
 # Plugin Configuration
 #------------------------------------------------------------------------------
 # Enable syntax highlighting for commands (must be sourced before other plugins)
-. /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+. /usr/share/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Configure fuzzy finder (fzf) for enhanced file/history search
-. /usr/share/fzf/key-bindings.zsh
-. /usr/share/fzf/completion.zsh
+. /usr/share/doc/fzf/examples/key-bindings.zsh
+. /usr/share/doc/fzf/examples/completion.zsh
 . <(fzf --zsh)
 # Enable fish-like autosuggestions based on command history
-. /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+. /usr/share/zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Use both history and completion for suggestions
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Enable async mode for better performance
@@ -301,7 +301,7 @@ __welcome() {
   MSG+=" IP:           ${IP}\n"
   MSG+=" MAC:          ${MAC}"
 
-  print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/small.cow -W 500 -n
+  print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/apt.cow -W 500 -n
 }
 
 # Run welcome message on startup

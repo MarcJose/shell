@@ -950,25 +950,19 @@ alias .......='cd ../../../../../..'
 #------------------------------------------------------------------------------
 # Pacman and system maintenance
 # Remove unused packages
-alias autoremove='pacman -Qdtq | sudo pacman -Rs -'
+alias autoremove='sudo apt autoremove'
 # Clean package cache
-alias pacclean='sudo paccache -rk 2'
+alias aptclean='sudo apt-get clean'
 # List available updates
-alias updates='pacman -Qu'
-# Update package mirror list
-alias mirror-update='sudo reflector --latest 5 --country $(curl --silent https://ipapi.co/country_code | echo "Germany") --age 12 --protocol https --sort rate --threads $(nproc) --save /etc/pacman.d/mirrorlist'
+alias updates='sudo apt list --upgradable'
 # Download and install updates
-alias update='sudo pacman -Syuq && \
-              yay -Sua; \
-              sudo updatedb; \
-              sudo pkgfile --update'
+alias update='sudo apt update && \
+              sudo apt upgrade && \
+              sudo updatedb'
 # Fetch new mirror list and update as above, clean the package cache and remove unused packages
-alias upgrade='mirror-update && \
-               update && \
-               pacclean && \
+alias upgrade='update && \
+               aptclean && \
                autoremove'
-# Get new configs (.pacnew)
-alias newconf='sudo find /etc -type f -name "*.pacnew"'
 #------------------------------------------------------------------------------
 # System Maintenance Aliases
 #------------------------------------------------------------------------------
@@ -1027,8 +1021,6 @@ alias copy-dry='rsync -vcrlptgoDHEAXh --progress --stats --dry-run'
 alias g='git'
 alias gcheckout='git branch | fzf | xargs git checkout'
 alias glog='git log --oneline | fzf --preview "git show {+1}"'
-# Build tools
-alias build='namcap PKGBUILD && makepkg --printsrcinfo > .SRCINFO && makepkg -si'
 # Visualize repository activity
 alias gource='gource -s 1 --key -a 1 --user-image-dir "$(git rev-parse --show-toplevel)/.git/avatar"'
 #------------------------------------------------------------------------------
@@ -1119,10 +1111,10 @@ alias gpg-upload='gpg --send-keys'
 # fzf Integrations
 #------------------------------------------------------------------------------
 ## Package manager
-alias fsearch='sudo pacman -Fy; pacman -Slq | fzf --multi --preview "cat <(pacman -Si {1}) <(pacman -Fl {1} | awk "{print \$2}")"'
-alias finstall='sudo pacman -Fy; pacman -Slq | fzf --multi --preview "cat <(pacman -Si {1}) <(pacman -Fl {1} | awk "{print \$2}")" | xargs -ro sudo pacman -S'
-alias fremove='pacman -Qq | fzf --multi --preview "pacman -Qi {1}" | xargs -ro sudo pacman -Rns'
-alias funinstall='pacman -Qq | fzf --multi --preview "pacman -Qi {1}" | xargs -ro sudo pacman -Rns'
+alias fsearch='apt-cache search . | sort | fzf --multi --preview "apt-cache show {1}"'
+alias finstall='apt-cache search . | sort | fzf --multi --preview "apt-cache show {1}" | cut -d " " -f1 | xargs -ro sudo apt install'
+alias fremove='dpkg -l | sed 1,5d | awk "{print \$2}" | fzf --multi --preview "apt-cache show {1}" | xargs -ro sudo apt remove'
+alias funinstall='dpkg -l | sed 1,5d | awk "{print \$2}" | fzf --multi --preview "apt-cache show {1}" | xargs -ro sudo apt purge'
 # Bat/Cat integration
 if command -v bat >/dev/null 2>&1; then
     # If bat is available, use it

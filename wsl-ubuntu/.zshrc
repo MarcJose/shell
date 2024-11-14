@@ -13,20 +13,20 @@ umask 022
 # Source profile file for environment variables and basic setup
 . ~/.profile
 # Enable command-not-found suggestion functionality
-. /usr/share/doc/pkgfile/command-not-found.zsh
+. /etc/zsh/command-not-found.zsh
 
 
 #------------------------------------------------------------------------------
 # Plugin Configuration
 #------------------------------------------------------------------------------
 # Enable syntax highlighting for commands (must be sourced before other plugins)
-. /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+. /usr/share/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Configure fuzzy finder (fzf) for enhanced file/history search
-. /usr/share/fzf/key-bindings.zsh
-. /usr/share/fzf/completion.zsh
+. /usr/share/doc/fzf/examples/key-bindings.zsh
+. /usr/share/doc/fzf/examples/completion.zsh
 . <(fzf --zsh)
 # Enable fish-like autosuggestions based on command history
-. /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+. /usr/share/zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Use both history and completion for suggestions
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Enable async mode for better performance
@@ -89,7 +89,7 @@ zstyle ':completion:*' accept-exact '*(N)'
 # Initialize completion system
 COMPLETIONCACHE="${XDG_CACHE_HOME}/zsh/zcompdump-${ZSH_VERSION}"
 if [ ! -d "${COMPLETIONCACHE}" ]; then
-  mkdir -p "${COMPLETIONCACHE}"
+    mkdir -p "${COMPLETIONCACHE}"
 fi
 # Load bash compatibility layer
 autoload -U +X bashcompinit && bashcompinit
@@ -169,15 +169,15 @@ key[Control-Right]="${terminfo[kRIT5]}"
 [ -n "${key[Control-Right]}" ] && bindkey -- "${key[Control-Right]}" forward-word
 # Set up terminal application mode
 if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
-  autoload -Uz add-zle-hook-widget
-  zle_application_mode_start() {
-    echoti smkx
-  }
-  zle_application_mode_stop() {
-    echoti rmkx
-  }
-  add-zle-hook-widget -Uz zle-line-init zle_application_mode_start
-  add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
+    autoload -Uz add-zle-hook-widget
+    zle_application_mode_start() {
+        echoti smkx
+    }
+    zle_application_mode_stop() {
+        echoti rmkx
+    }
+    add-zle-hook-widget -Uz zle-line-init zle_application_mode_start
+    add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
 fi
 
 
@@ -191,12 +191,12 @@ DIRSTACKFOLDER="${XDG_CACHE_HOME}/zsh"
 DIRSTACKFILE="${DIRSTACKFOLDER}/dirs"
 # Load previous directory stack if it exists
 if [ -f "$DIRSTACKFILE" ] && (( ${#dirstack} == 0 )); then
-  dirstack=("${(@f)"$(< "$DIRSTACKFILE")"}")
-  [ -d "${dirstack[1]}" ] && cd -- "${dirstack[1]}"
+    dirstack=("${(@f)"$(< "$DIRSTACKFILE")"}")
+    [ -d "${dirstack[1]}" ] && cd -- "${dirstack[1]}"
 fi
 # Save directory stack on directory change
 chpwd_dirstack() {
-  print -l -- "$PWD" "${(u)dirstack[@]}" > "$DIRSTACKFILE"
+    print -l -- "$PWD" "${(u)dirstack[@]}" > "$DIRSTACKFILE"
 }
 add-zsh-hook -Uz chpwd chpwd_dirstack
 # Configure directory stack behavior
@@ -221,10 +221,10 @@ zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b:%r'
 zstyle ':vcs_info:*' enable git cvs svn
 # VCS information wrapper function
 __vcs_info_wrapper() {
-  vcs_info
-  if [ -n "${vcs_info_msg_0_}" ]; then
-    echo "(%F{cyan}${vcs_info_msg_0_}%f)$del"
-  fi
+    vcs_info
+    if [ -n "${vcs_info_msg_0_}" ]; then
+        echo "(%F{cyan}${vcs_info_msg_0_}%f)$del"
+    fi
 }
 
 
@@ -233,21 +233,21 @@ __vcs_info_wrapper() {
 #------------------------------------------------------------------------------
 # Function to format command execution time
 __cmd_exec_time() {
-  local stop=$(date +%s)
-  local start=${cmd_timestamp:-$stop}
-  integer elapsed=$stop-$start
-  (($elapsed > 2)) && print -P "%F{yellow}${elapsed}s%f"
+    stop=$(date +%s)
+    start=${cmd_timestamp:-$stop}
+    integer elapsed=$stop-$start
+    (($elapsed > 2)) && print -P "%F{yellow}${elapsed}s%f"
 }
 # Function to record command start time
 __record_time_preexec() {
-  cmd_timestamp=$(date +%s)
+    cmd_timestamp=$(date +%s)
 }
 # Add hook for command execution time
 add-zsh-hook preexec __record_time_preexec
 # Build prompt with status, date, username, VCS info, and execution time
 __build_prompt() {
-  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][$(__cmd_exec_time)][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__vcs_info_wrapper): "
-  RPROMPT='%B%F{cyan}%2d%f%b'
+    PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][$(__cmd_exec_time)][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__vcs_info_wrapper): "
+    RPROMPT='%B%F{cyan}%2d%f%b'
 }
 # Update prompt before each command
 precmd() {
@@ -283,6 +283,17 @@ alias cd='z'
 
 
 #------------------------------------------------------------------------------
+# WSL Configuration
+#------------------------------------------------------------------------------
+ss -a | grep -q ${SSH_AUTH_SOCK}
+if [ $= -ne 0 ]; then
+    rm -f ${SSH_AUTH_SOCK}
+    npiperelaypath=$(wslpath "C:/Program Files/npiperelay")
+    (setsid socat UNIX-LISTEN:${SSH_AUTH_SOCK},fork EXEC:"${npiperelaypath}/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork &) > /dev/null 2>&1
+fi
+
+
+#------------------------------------------------------------------------------
 # User Configuration
 #------------------------------------------------------------------------------
 [ -f ~/.zshrc.local ] && . ~/.zshrc.local
@@ -293,15 +304,15 @@ alias cd='z'
 #------------------------------------------------------------------------------
 # Display system information on shell startup
 __welcome() {
-  MSG+="Systeminformation:\n"
-  MSG+=" Kernel:       ${KERNEL}\n"
-  MSG+=" CPU:          ${CPU}\n"
-  MSG+=" GPU:          ${GPU}\n"
-  MSG+=" RAM:          ${RAM} GB\n"
-  MSG+=" IP:           ${IP}\n"
-  MSG+=" MAC:          ${MAC}"
+    MSG+="Systeminformation:\n"
+    MSG+=" Kernel:       ${KERNEL}\n"
+    MSG+=" CPU:          ${CPU}\n"
+    MSG+=" GPU:          ${GPU}\n"
+    MSG+=" RAM:          ${RAM} GB\n"
+    MSG+=" IP:           ${IP}\n"
+    MSG+=" MAC:          ${MAC}"
 
-  print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/small.cow -W 500 -n
+    print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/apt.cow -W 500 -n
 }
 
 # Run welcome message on startup
