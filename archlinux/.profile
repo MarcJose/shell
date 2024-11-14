@@ -1,6 +1,3 @@
-#!/bin/sh
-
-
 #==============================================================================
 # ~/.profile: User Environment Configuration
 #==============================================================================
@@ -1143,8 +1140,6 @@ alias fnano='nano $(fzf)'
 alias fedit='${EDITOR:-vim} $(fzf)'
 # Find and open with default app
 alias fopen='xdg-open $(fzf)'
-# Interactive cd
-alias fcd='fcd'
 # History search
 alias fhistory='history | fzf | cut -c8-'
 #------------------------------------------------------------------------------
@@ -1161,3 +1156,9 @@ alias size='du -sch 2> /dev/null'
 alias watch='watch '
 # LibreOffice Fix
 alias libreoffice='LD_PRELOAD=/usr/lib/libfreetype.so libreoffice'
+
+
+#------------------------------------------------------------------------------
+# User Configuration
+#------------------------------------------------------------------------------
+[ -f ~/.profile.local ] && . ~/.profile.local
