@@ -16819,9 +16819,13 @@ export __gpg_upload() {
 #------------------------------------------------------------------------------
 # Self updater
 update_dotfiles() {
+    # Store current directory
+    local ORIG_DIR=$(pwd)
+
     # Check if already run after boot
     local BOOT_FLAG="/tmp/dotfiles_updated_since_boot"
     if [[ -f "$BOOT_FLAG" ]]; then
+        cd "$ORIG_DIR"
         return 0
     fi
 
@@ -16834,15 +16838,23 @@ update_dotfiles() {
     elif [[ -f /etc/ubuntu-release ]] || [[ -f /etc/lsb-release ]]; then
         OS="ubuntu"
     else
+        cd "$ORIG_DIR"
         return 1
     fi
 
     # Create temp directory
     local TEMP_DIR=$(mktemp -d)
-    cd "$TEMP_DIR" || return 1
+    cd "$TEMP_DIR" || {
+        cd "$ORIG_DIR"
+        return 1
+    }
 
     # Clone repository (replace URL with your repo)
-    git clone --depth 1 https://github.com/yourusername/dotfiles.git .
+    git clone --depth 1 git@github.com:MarcJose/shell.git . || {
+        cd "$ORIG_DIR"
+        rm -rf "$TEMP_DIR"
+        return 1
+    }
 
     # Copy OS-specific files
     if [[ -f "$OS/.zshrc" ]]; then
@@ -16853,6 +16865,7 @@ update_dotfiles() {
     fi
 
     # Cleanup
+    cd "$ORIG_DIR"
     rm -rf "$TEMP_DIR"
     touch "$BOOT_FLAG"
 }
