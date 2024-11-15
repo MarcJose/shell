@@ -969,6 +969,8 @@ alias updates='sudo apt list --upgradable'
 # Download and install updates
 alias update='sudo apt update && \
               sudo apt upgrade && \
+              sudo apt -y -q dist-upgrade; \
+              sudo apt-get -y -q -f install ; \
               sudo updatedb'
 # Fetch new mirror list and update as above, clean the package cache and remove unused packages
 alias upgrade='update && \
