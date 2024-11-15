@@ -429,6 +429,8 @@ export SUDO_EDITOR='nano'
 export VISUAL='nano'
 # Disable WSL installation prompts
 export DONT_PROMPT_WSL_INSTALL='yes'
+# SSH agent socket
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
 #------------------------------------------------------------------------------
 # Database and Development Settings
 #------------------------------------------------------------------------------
@@ -518,8 +520,6 @@ fi
 if [ -f "${HONE}/deno/env" ]; then
     . "${HONE}/deno/env" > /dev/null
 fi
-# Initialize thefuck command correction
-eval "$(thefuck --alias dammit)"
 #------------------------------------------------------------------------------
 # Output Formatting Functions
 #------------------------------------------------------------------------------
