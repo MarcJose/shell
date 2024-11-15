@@ -622,8 +622,8 @@ export gitPullAll() {
 #------------------------------------------------------------------------------
 # AWS profile selector
 export aws_profile() {
-    if [ -f ~/.aws/credentials ]; then
-        profile=$(grep '^\[.*\]' ~/.aws/credentials | sed 's/\[\(.*\)\]/\1/' | fzf)
+    if [ -f ${AWS_CONFIG_FILE} ]; then
+        profile=$(grep '^\[.*\]' ${AWS_CONFIG_FILE} | sed 's/\[profile \(.*\)\]/\1/;s/\[\(.*\)\]/\1/' | fzf)
         if [ ! -z "$profile" ]; then
             export AWS_PROFILE="$profile"
             echo "AWS Profile set to: $profile"
