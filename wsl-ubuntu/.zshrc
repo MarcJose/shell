@@ -314,5 +314,8 @@ __welcome() {
     print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/apt.cow -W 500 -n
 }
 
+# Run updater once after boot
+update_dotfiles
+
 # Run welcome message on startup
 __welcome

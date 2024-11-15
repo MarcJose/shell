@@ -279,7 +279,7 @@ alias cd='z'
 # Enable Bun completion if installed
 [ -s "${BUN_INSTALL}/_bun" ] && . "${BUN_INSTALL}/_bun"
 # Enable Deno completion if installed
-[[ ":$FPATH" != *"${XDG_CONFIG_HOME}/zsh/completions"* ]] && export FPATH="${XDG_CONFIG_HOME}/zsh/completions:${FPATH}"
+[[ ":$FPATH:" != *":${XDG_CONFIG_HOME}/zsh/completions:"* ]] && export FPATH="${XDG_CONFIG_HOME}/zsh/completions:$FPATH"
 
 
 #------------------------------------------------------------------------------
@@ -303,6 +303,9 @@ __welcome() {
 
   print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/small.cow -W 500 -n
 }
+
+# Run updater once after boot
+update_dotfiles
 
 # Run welcome message on startup
 __welcome
