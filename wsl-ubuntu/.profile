@@ -21,60 +21,60 @@
 # Text Effects
 #------------------------------------------------------------------------------
 # Hidden text (same color as background)
-HIDDEN="\e[8m"
+export HIDDEN="\e[8m"
 # Inverted colors (swap foreground/background)
-INVERT="\e[7m"
+export INVERT="\e[7m"
 # Underlined text
-UNDERLINED="\e[4m"
+export UNDERLINED="\e[4m"
 # Dimmed text intensity
-DIM="\e[2m"
+export DIM="\e[2m"
 # Bold text
-BOLD="\e[1m"
+export BOLD="\e[1m"
 #------------------------------------------------------------------------------
 # Foreground Colors (Text Colors)
 #------------------------------------------------------------------------------
 # Standard Colors (30-37)
-FG_BLACK="\e[30m"
-FG_RED="\e[31m"
-FG_GREEN="\e[32m"
-FG_YELLOW="\e[33m"
-FG_BLUE="\e[34m"
-FG_MAGENTA="\e[35m"
-FG_CYAN="\e[36m"
-FG_LIGHTGREY="\e[37m"
+export FG_BLACK="\e[30m"
+export FG_RED="\e[31m"
+export FG_GREEN="\e[32m"
+export FG_YELLOW="\e[33m"
+export FG_BLUE="\e[34m"
+export FG_MAGENTA="\e[35m"
+export FG_CYAN="\e[36m"
+export FG_LIGHTGREY="\e[37m"
 # Bright Colors (90-97)
-FG_GREY="\e[90m"
-FG_LIGHTRED="\e[91m"
-FG_LIGHTGREEN="\e[92m"
-FG_LIGHTYELLOW="\e[93m"
-FG_LIGHTBLUE="\e[94m"
-FG_LIGHTMAGENTA="\e[95m"
-FG_LIGHTCYAN="\e[96m"
-FG_WHITE="\e[97m"
+export FG_GREY="\e[90m"
+export FG_LIGHTRED="\e[91m"
+export FG_LIGHTGREEN="\e[92m"
+export FG_LIGHTYELLOW="\e[93m"
+export FG_LIGHTBLUE="\e[94m"
+export FG_LIGHTMAGENTA="\e[95m"
+export FG_LIGHTCYAN="\e[96m"
+export FG_WHITE="\e[97m"
 #------------------------------------------------------------------------------
 # Background Colors
 #------------------------------------------------------------------------------
 # Standard Colors (40-47)
-BG_BLACK="\e[40m"
-BG_RED="\e[41m"
-BG_GREEN="\e[42m"
-BG_YELLOW="\e[43m"
-BG_BLUE="\e[44m"
-BG_MAGENTA="\e[45m"
-BG_CYAN="\e[46m"
-BG_LIGHTGREY="\e[47m"
+export BG_BLACK="\e[40m"
+export BG_RED="\e[41m"
+export BG_GREEN="\e[42m"
+export BG_YELLOW="\e[43m"
+export BG_BLUE="\e[44m"
+export BG_MAGENTA="\e[45m"
+export BG_CYAN="\e[46m"
+export BG_LIGHTGREY="\e[47m"
 # Bright Colors (100-107)
-BG_GREY="\e[100m"
-BG_LIGHTRED="\e[101m"
-BG_LIGHTGREEN="\e[102m"
-BG_LIGHTYELLOW="\e[103m"
-BG_LIGHTBLUE="\e[104m"
-BG_LIGHTMAGENTA="\e[105m"
-BG_LIGHTCYAN="\e[106m"
-BG_WHITE="\e[107m"
+export BG_GREY="\e[100m"
+export BG_LIGHTRED="\e[101m"
+export BG_LIGHTGREEN="\e[102m"
+export BG_LIGHTYELLOW="\e[103m"
+export BG_LIGHTBLUE="\e[104m"
+export BG_LIGHTMAGENTA="\e[105m"
+export BG_LIGHTCYAN="\e[106m"
+export BG_WHITE="\e[107m"
 # Reset Code
 # Reset all colors and effects
-ENDENC="\e[0m"
+export ENDENC="\e[0m"
 
 
 #==============================================================================
@@ -87,246 +87,246 @@ ENDENC="\e[0m"
 # Core XDG Directories
 #------------------------------------------------------------------------------
 # User-specific configuration files
-XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_CONFIG_HOME="${HOME}/.config"
 # User-specific non-essential data
-XDG_CACHE_HOME="${HOME}/.cache"
+export XDG_CACHE_HOME="${HOME}/.cache"
 # User-specific data files
-XDG_DATA_HOME="${HOME}/.local/share"
+export XDG_DATA_HOME="${HOME}/.local/share"
 # User-specific state files
-XDG_STATE_HOME="${HOME}/.local/state"
+export XDG_STATE_HOME="${HOME}/.local/state"
 # User-specific runtime files
-XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 # System-wide directories
 # System data directories
-XDG_DATA_DIRS="/usr/local/share:/usr/share"
+export XDG_DATA_DIRS="/usr/local/share:/usr/share"
 # System config directories
-XDG_CONFIG_DIRS="/etc/xdg"
+export XDG_CONFIG_DIRS="/etc/xdg"
 #------------------------------------------------------------------------------
 # Application-Specific XDG Configurations
 #------------------------------------------------------------------------------
 # Development Tools
 #------------------------------------------------------------------------------
-BUN_INSTALL="${XDG_DATA_HOME}/bun"
+export BUN_INSTALL="${XDG_DATA_HOME}/bun"
 # Rust package manager
-CARGO_HOME="${XDG_DATA_HOME}/cargo"
-GDBHISTFILE="${XDG_DATA_HOME}/gdb/history"
-CONDARC="${XDG_CONFIG_HOME}/conda/condarc"
+export CARGO_HOME="${XDG_DATA_HOME}/cargo"
+export GDBHISTFILE="${XDG_DATA_HOME}/gdb/history"
+export CONDARC="${XDG_CONFIG_HOME}/conda/condarc"
 # Go modules cache
-GOMODCACHE="${XDG_CACHE_HOME}/go/mod"
+export GOMODCACHE="${XDG_CACHE_HOME}/go/mod"
 # Go workspace
-GOPATH="${XDG_DATA_HOME}/go"
+export GOPATH="${XDG_DATA_HOME}/go"
 # Gradle build tool
-GRADLE_USER_HOME="${XDG_DATA_HOME}/gradle"
+export GRADLE_USER_HOME="${XDG_DATA_HOME}/gradle"
 # NPM configuration
-NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME}/npm/npmrc"
+export NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME}/npm/npmrc"
 # Python version manager
-PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
-PYLINTHOME="${XDG_CACHE_HOME}/pylint"
-PYLINTRC="${XDG_CONFIG_HOME}/pylint/pylintrc"
-PYTHONPYCACHEPREFIX="${XDG_CACHE_HOME}/python"
-PYTHONUSERBASE="${XDG_DATA_HOME}/python"
-PYTHON_EGG_CACHE="${XDG_CACHE_HOME}/python-eggs"
-PYTHON_HISTORY="${XDG_STATE_HOME}/python/history"
+export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
+export PYLINTHOME="${XDG_CACHE_HOME}/pylint"
+export PYLINTRC="${XDG_CONFIG_HOME}/pylint/pylintrc"
+export PYTHONPYCACHEPREFIX="${XDG_CACHE_HOME}/python"
+export PYTHONUSERBASE="${XDG_DATA_HOME}/python"
+export PYTHON_EGG_CACHE="${XDG_CACHE_HOME}/python-eggs"
+export PYTHON_HISTORY="${XDG_STATE_HOME}/python/history"
 # Rust toolchain manager
-RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
-_JAVA_OPTIONS="-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
-JAVA_TOOL_OPTIONS="-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
-JDK_JAVA_OPTIONS="-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
-JULIAUP_DEPOT_PATH="${XDG_DATA_HOME}/julia"
-JULIA_DEPOT_PATH="${XDG_DATA_HOME}/julia:${JULIA_DEPOT_PATH}"
-JUPYTER_PLATFORM_DIRS="1"
-R_HISTFILE="${XDG_CONFIG_HOME}/R/history"
-R_HOME_USER="${XDG_CONFIG_HOME}/R"
-R_PROFILE_USER="${XDG_CONFIG_HOME}/R/profile"
+export RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
+export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
+export JAVA_TOOL_OPTIONS="-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
+export JDK_JAVA_OPTIONS="-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
+export JULIAUP_DEPOT_PATH="${XDG_DATA_HOME}/julia"
+export JULIA_DEPOT_PATH="${XDG_DATA_HOME}/julia:${JULIA_DEPOT_PATH}"
+export JUPYTER_PLATFORM_DIRS="1"
+export R_HISTFILE="${XDG_CONFIG_HOME}/R/history"
+export R_HOME_USER="${XDG_CONFIG_HOME}/R"
+export R_PROFILE_USER="${XDG_CONFIG_HOME}/R/profile"
 #------------------------------------------------------------------------------
 # Shell and Terminal
 #------------------------------------------------------------------------------
-BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash-completion/bash_completion"
+export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash-completion/bash_completion"
 # Readline configuration
-INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
+export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
 # Screen configuration
-SCREENRC="${XDG_CONFIG_HOME}/screen/screenrc"
+export SCREENRC="${XDG_CONFIG_HOME}/screen/screenrc"
 # Terminal information
-TERMINFO="${XDG_DATA_HOME}/terminfo"
-TERMINFO_DIRS="${XDG_DATA_HOME}/terminfo:/usr/share/terminfo"
-VIMINIT='let $MYVIMRC="${XDG_CONFIG_HOME}/vim/vimrc" | source ${MYVIMRC}'
-GVIMINIT='let $MYGVIMRC="${XDG_CONFIG_HOME}/vim/gvimrc" | source ${MYGVIMRC}'
+export TERMINFO="${XDG_DATA_HOME}/terminfo"
+export TERMINFO_DIRS="${XDG_DATA_HOME}/terminfo:/usr/share/terminfo"
+export VIMINIT='let $MYVIMRC="${XDG_CONFIG_HOME}/vim/vimrc" | source ${MYVIMRC}'
+export GVIMINIT='let $MYGVIMRC="${XDG_CONFIG_HOME}/vim/gvimrc" | source ${MYGVIMRC}'
 # ZSH configuration directory
-ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
+export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
 #------------------------------------------------------------------------------
 # Version Control Systems
 #------------------------------------------------------------------------------
 # Git configuration
-GIT_CONFIG_GLOBAL="${XDG_CONFIG_HOME}/git/config"
+export GIT_CONFIG_GLOBAL="${XDG_CONFIG_HOME}/git/config"
 # GPG configuration
-GNUPGHOME="${XDG_DATA_HOME}/gnupg"
+export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
 # SVN configuration
-SVN_CONFIG_DIR="${XDG_CONFIG_HOME}/subversion"
+export SVN_CONFIG_DIR="${XDG_CONFIG_HOME}/subversion"
 #------------------------------------------------------------------------------
 # Development Environments and IDEs
 #------------------------------------------------------------------------------
 # Atom editor
-ATOM_HOME="${XDG_DATA_HOME}/atom"
-JUPYTER_CONFIG_DIR="${XDG_CONFIG_HOME}/jupyter"
-JUPYTER_PLATFORM_DIRS="1"
+export ATOM_HOME="${XDG_DATA_HOME}/atom"
+export JUPYTER_CONFIG_DIR="${XDG_CONFIG_HOME}/jupyter"
+export JUPYTER_PLATFORM_DIRS="1"
 # VS Code
-VSCODE_PORTABLE="${XDG_DATA_HOME}/vscode"
-MYPY_CACHE_DIR="${XDG_CACHE_HOME}/mypy"
+export VSCODE_PORTABLE="${XDG_DATA_HOME}/vscode"
+export MYPY_CACHE_DIR="${XDG_CACHE_HOME}/mypy"
 #------------------------------------------------------------------------------
 # Build and Package Management
 #------------------------------------------------------------------------------
 # Gradle
-GRADLE_USER_HOME="${XDG_DATA_HOME}/gradle"
+export GRADLE_USER_HOME="${XDG_DATA_HOME}/gradle"
 # Rust/Cargo
-CARGO_HOME="${XDG_DATA_HOME}/cargo"
+export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 # Ruby gems
-GEM_HOME="${XDG_DATA_HOME}/gem"
-GEM_SPEC_CACHE="${XDG_CACHE_HOME}/gem"
+export GEM_HOME="${XDG_DATA_HOME}/gem"
+export GEM_SPEC_CACHE="${XDG_CACHE_HOME}/gem"
 # Maven
-MAVEN_USER_HOME="${XDG_CONFIG_HOME}/maven"
-NVM_DIR="${XDG_DATA_HOME}/nvm"
+export MAVEN_USER_HOME="${XDG_CONFIG_HOME}/maven"
+export NVM_DIR="${XDG_DATA_HOME}/nvm"
 #------------------------------------------------------------------------------
 # Cloud and Infrastructure Tools
 #------------------------------------------------------------------------------
-AWS_CONFIG_FILE="${XDG_CONFIG_HOME}/aws/config"
-AWS_SHARED_CREDENTIALS_FILE="${XDG_CONFIG_HOME}/aws/credentials"
-AZURE_CONFIG_DIR="${XDG_DATA_HOME}/azure"
-DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
-KUBECONFIG="${XDG_CONFIG_HOME}/kube"
-KUBECACHEDIR="${XDG_CACHE_HOME}/kube"
-K9SCONFIG="${XDG_CONFIG_HOME}/k9s"
-MACHINE_STORAGE_PATH="${XDG_DATA_HOME}/docker-machine"
-MINIKUBE_HOME="${XDG_DATA_HOME}/minikube"
+export AWS_CONFIG_FILE="${XDG_CONFIG_HOME}/aws/config"
+export AWS_SHARED_CREDENTIALS_FILE="${XDG_CONFIG_HOME}/aws/credentials"
+export AZURE_CONFIG_DIR="${XDG_DATA_HOME}/azure"
+export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
+export KUBECONFIG="${XDG_CONFIG_HOME}/kube"
+export KUBECACHEDIR="${XDG_CACHE_HOME}/kube"
+export K9SCONFIG="${XDG_CONFIG_HOME}/k9s"
+export MACHINE_STORAGE_PATH="${XDG_DATA_HOME}/docker-machine"
+export MINIKUBE_HOME="${XDG_DATA_HOME}/minikube"
 #------------------------------------------------------------------------------
 # Database Tools
 #------------------------------------------------------------------------------
-MYSQL_HISTFILE="${XDG_DATA_HOME}/mysql_history"
-PSQLRC="${XDG_CONFIG_HOME}/pg/psqlrc"
-PGPASSFILE="${XDG_CONFIG_HOME}/pg/pgpass"
-SQLITE_HISTORY="${XDG_DATA_HOME}/sqlite_history"
+export MYSQL_HISTFILE="${XDG_DATA_HOME}/mysql_history"
+export PSQLRC="${XDG_CONFIG_HOME}/pg/psqlrc"
+export PGPASSFILE="${XDG_CONFIG_HOME}/pg/pgpass"
+export SQLITE_HISTORY="${XDG_DATA_HOME}/sqlite_history"
 #------------------------------------------------------------------------------
 # Multimedia Applications
 #------------------------------------------------------------------------------
-MPLAYER_HOME="${XDG_CONFIG_HOME}/mplayer"
-FFMPEG_DATADIR="${XDG_CONFIG_HOME}/ffmpeg"
+export MPLAYER_HOME="${XDG_CONFIG_HOME}/mplayer"
+export FFMPEG_DATADIR="${XDG_CONFIG_HOME}/ffmpeg"
 #------------------------------------------------------------------------------
 # Other Applications
 #------------------------------------------------------------------------------
-ACKRC="${XDG_CONFIG_HOME}/ack/ackrc"
-ANSIBLE_CONFIG="${XDG_CONFIG_HOME}/ansible.cfg"
-ANSIBLE_GALAXY_CACHE_DIR="${XDG_CACHE_HOME}/ansible/galaxy_cache"
-ANSIBLE_HOME="${XDG_CONFIG_HOME}/ansible"
-CUDA_CACHE_PATH="${XDG_CACHE_HOME}/nv"
+export ACKRC="${XDG_CONFIG_HOME}/ack/ackrc"
+export ANSIBLE_CONFIG="${XDG_CONFIG_HOME}/ansible.cfg"
+export ANSIBLE_GALAXY_CACHE_DIR="${XDG_CACHE_HOME}/ansible/galaxy_cache"
+export ANSIBLE_HOME="${XDG_CONFIG_HOME}/ansible"
+export CUDA_CACHE_PATH="${XDG_CACHE_HOME}/nv"
 # Shell history
-HISTFILE="${XDG_STATE_HOME}/history/history"
+export HISTFILE="${XDG_STATE_HOME}/history/history"
 # Less pager history
-LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
-WGETRC="${XDG_CONFIG_HOME}/wgetrc"
-ASDF_CONFIG_FILE="${XDG_CONFIG_HOME}/asdf/asdfrc"
-ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf"
-ASPELL_CONF="per-conf ${XDG_CONFIG_HOME}/aspell/aspell.conf; personal ${XDG_CONFIG_HOME}/aspell/en.pws; repl ${XDG_CONFIG_HOME}/aspell/en.prepl"
-BOGOFILTER_DIR="${XDG_DATA_HOME}/bogofilter"
-C3270PRO="${XDG_CONFIG_HOME}/c3270/config"
-CALCHISTFILE="${XDG_CACHE_HOME}/calc_history"
-CD_BOOKMARK_FILE="${XDG_CONFIG_HOME}/cd-bookmark/bookmarks"
-CGDB_DIR="${XDG_CONFIG_HOME}/cgdb"
-CHKTEXRC="${XDG_CONFIG_HOME}/chktex"
-CIN_CONFIG="${XDG_CONFIG_HOME}/bcast5"
-CONAN_USER_HOME="${XDG_CONFIG_HOME}"
-CRAWL_DIR="${XDG_DATA_HOME}/crawl/"
-DISCORD_USER_DATA_DIR="${XDG_DATA_HOME}"
-DOT_SAGE="${XDG_CONFIG_HOME}/sage"
-DVDCSS_CACHE="${XDG_DATA_HOME}/dvdcss"
-EASYOCR_MODULE_PATH="${XDG_CONFIG_HOME}/EasyOCR"
-ELECTRUMDIR="${XDG_DATA_HOME}/electrum"
-ELINKS_CONFDIR="${XDG_CONFIG_HOME}/elinks"
-ELM_HOME="${XDG_CONFIG_HOME}/elm"
-EM_CACHE="${XDG_CACHE_HOME}/emscripten/cache"
-EM_CONFIG="${XDG_CONFIG_HOME}/emscripten/config"
-EM_PORTS="${XDG_DATA_HOME}/emscripten/cache"
-FCEUX_HOME="${XDG_CONFIG_HOME}/fceux"
-GETIPLAYERUSERPREFS="${XDG_DATA_HOME}/get_iplayer"
-GHCUP_USE_XDG_DIRS="true"
-GHCUP_USE_XDG_DIRS=true
-GQRC="${XDG_CONFIG_HOME}/gqrc"
-GQSTATE="${XDG_DATA_HOME}/gq/gq-state"
-GRC_PREFS_PATH="${XDG_CONFIG_HOME}/gnuradio/grc.conf"
-GRIPHOME="${XDG_CONFIG_HOME}/grip"
-GR_PREFS_PATH="${XDG_CONFIG_HOME}/gnuradio"
-GTK2_RC_FILES="${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
-GTK_RC_FILES="${XDG_CONFIG_HOME}/gtk-1.0/gtkrc"
-HOUDINI_USER_PREF_DIR="${XDG_CACHE_HOME}/houdini__HVER__"
-ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
-IMAPFILTER_HOME="${XDG_CONFIG_HOME}/imapfilter"
-IPFS_PATH="${XDG_DATA_HOME}/ipfs"
-IRBRC="${XDG_CONFIG_HOME}/irb/irbrc"
-KDEHOME="${XDG_CONFIG_HOME}/kde"
-KODI_DATA="${XDG_DATA_HOME}/kodi"
-KSCRIPT_CACHE_DIR="${XDG_CACHE_HOME}/kscript"
-LEDGER_FILE="${XDG_DATA_HOME}/hledger.journal"
-LEIN_HOME="${XDG_DATA_HOME}/lein"
-LYNX_CFG_PATH="${XDG_CONFIG_HOME}/lynx.cfg"
-MATHEMATICA_USERBASE="${XDG_CONFIG_HOME}/mathematica"
-MAXIMA_USERDIR="${XDG_CONFIG_HOME}/maxima"
-MEDNAFEN_HOME="${XDG_CONFIG_HOME}/mednafen"
-MIX_XDG="true"
-MOST_INITFILE="${XDG_CONFIG_HOME}/mostrc"
-NODENV_ROOT="${XDG_DATA_HOME}/nodenv"
-NODE_REPL_HISTORY="${XDG_DATA_HOME}/node_repl_history"
-NUGET_PACKAGES="${XDG_CACHE_HOME}/NuGetPackages"
-N_PREFIX="${XDG_DATA_HOME}/n"
-OCTAVE_HISTFILE="${XDG_CACHE_HOME}/octave-hsts"
-OCTAVE_SITE_INITFILE="${XDG_CONFIG_HOME}/octave/octaverc"
-OLLAMA_MODELS="${XDG_DATA_HOME}/ollama/models"
-OMNISHARPHOME="${XDG_CONFIG_HOME}/omnisharp"
-OPAMROOT="${XDG_DATA_HOME}/opam"
-PARALLEL_HOME="${XDG_CONFIG_HOME}/parallel"
-PASSWORD_STORE_DIR="${XDG_DATA_HOME}/pass"
-PGSERVICEFILE="${XDG_CONFIG_HOME}/pg/pg_service.conf"
-PLATFORMIO_CORE_DIR="${XDG_DATA_HOME}/platformio"
-PLTUSERHOME="${XDG_DATA_HOME}/racket"
-PSQL_HISTORY="${XDG_STATE_HOME}/psql_history"
-RBENV_ROOT="${XDG_DATA_HOME}/rbenv"
-RECOLL_CONFDIR="${XDG_CONFIG_HOME}/recoll"
-REDISCLI_HISTFILE="${XDG_DATA_HOME}/redis/rediscli_history"
-REDISCLI_RCFILE="${XDG_CONFIG_HOME}/redis/redisclirc"
-RIPGREP_CONFIG_PATH="${XDG_CONFIG_HOME}/ripgrep/config"
-RLWRAP_HOME="${XDG_DATA_HOME}/rlwrap"
-RUFF_CACHE_DIR="${XDG_CACHE_HOME}/ruff"
-RXVT_SOCKET="${XDG_RUNTIME_DIR}/urxvtd"
-SINGULARITY_CACHEDIR="${XDG_CACHE_HOME}/singularity"
-SINGULARITY_CONFIGDIR="${XDG_CONFIG_HOME}/singularity"
-SOLARGRAPH_CACHE="${XDG_CACHE_HOME}/solargraph"
-SPACEMACSDIR="${XDG_CONFIG_HOME}/spacemacs"
-SSB_HOME="${XDG_DATA_HOME}/zoom"
-STACK_ROOT="${XDG_DATA_HOME}/stack"
-STACK_XDG=1
-STARSHIP_CACHE="${XDG_CACHE_HOME}/starship"
-STARSHIP_CONFIG="${XDG_CONFIG_HOME}/starship.toml"
-TEXMACS_HOME_PATH="${XDG_STATE_HOME}/texmacs"
-TEXMFCONFIG="${XDG_CONFIG_HOME}/texlive/texmf-config"
-TEXMFHOME="${XDG_DATA_HOME}/texmf"
-TEXMFVAR="${XDG_CACHE_HOME}/texlive/texmf-var"
-TRAVIS_CONFIG_PATH="${XDG_CONFIG_HOME}/travis"
-TS3_CONFIG_DIR="${XDG_CONFIG_HOME}/ts3client"
-UNCRUSTIFY_CONFIG="${XDG_CONFIG_HOME}/uncrustify/uncrustify.cfg"
-UNISON="${XDG_DATA_HOME}/unison"
-VAGRANT_ALIAS_FILE="${XDG_DATA_HOME}/vagrant/aliases"
-VAGRANT_HOME="${XDG_DATA_HOME}/vagrant"
-VIMPERATOR_INIT=":source ${XDG_CONFIG_HOME}/vimperator/vimperatorrc"
-VIMPERATOR_RUNTIME="${XDG_CONFIG_HOME}/vimperator"
-W3M_DIR="${XDG_STATE_HOME}/w3m"
-WAKATIME_HOME="${XDG_CONFIG_HOME}/wakatime"
-WINEPREFIX="${XDG_DATA_HOME}/wineprefixes/default"
-WORKON_HOME="${XDG_DATA_HOME}/virtualenvs"
-X3270PRO="${XDG_CONFIG_HOME}/x3270/config"
+export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
+export WGETRC="${XDG_CONFIG_HOME}/wgetrc"
+export ASDF_CONFIG_FILE="${XDG_CONFIG_HOME}/asdf/asdfrc"
+export ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf"
+export ASPELL_CONF="per-conf ${XDG_CONFIG_HOME}/aspell/aspell.conf; personal ${XDG_CONFIG_HOME}/aspell/en.pws; repl ${XDG_CONFIG_HOME}/aspell/en.prepl"
+export BOGOFILTER_DIR="${XDG_DATA_HOME}/bogofilter"
+export C3270PRO="${XDG_CONFIG_HOME}/c3270/config"
+export CALCHISTFILE="${XDG_CACHE_HOME}/calc_history"
+export CD_BOOKMARK_FILE="${XDG_CONFIG_HOME}/cd-bookmark/bookmarks"
+export CGDB_DIR="${XDG_CONFIG_HOME}/cgdb"
+export CHKTEXRC="${XDG_CONFIG_HOME}/chktex"
+export CIN_CONFIG="${XDG_CONFIG_HOME}/bcast5"
+export CONAN_USER_HOME="${XDG_CONFIG_HOME}"
+export CRAWL_DIR="${XDG_DATA_HOME}/crawl/"
+export DISCORD_USER_DATA_DIR="${XDG_DATA_HOME}"
+export DOT_SAGE="${XDG_CONFIG_HOME}/sage"
+export DVDCSS_CACHE="${XDG_DATA_HOME}/dvdcss"
+export EASYOCR_MODULE_PATH="${XDG_CONFIG_HOME}/EasyOCR"
+export ELECTRUMDIR="${XDG_DATA_HOME}/electrum"
+export ELINKS_CONFDIR="${XDG_CONFIG_HOME}/elinks"
+export ELM_HOME="${XDG_CONFIG_HOME}/elm"
+export EM_CACHE="${XDG_CACHE_HOME}/emscripten/cache"
+export EM_CONFIG="${XDG_CONFIG_HOME}/emscripten/config"
+export EM_PORTS="${XDG_DATA_HOME}/emscripten/cache"
+export FCEUX_HOME="${XDG_CONFIG_HOME}/fceux"
+export GETIPLAYERUSERPREFS="${XDG_DATA_HOME}/get_iplayer"
+export GHCUP_USE_XDG_DIRS="true"
+export GHCUP_USE_XDG_DIRS=true
+export GQRC="${XDG_CONFIG_HOME}/gqrc"
+export GQSTATE="${XDG_DATA_HOME}/gq/gq-state"
+export GRC_PREFS_PATH="${XDG_CONFIG_HOME}/gnuradio/grc.conf"
+export GRIPHOME="${XDG_CONFIG_HOME}/grip"
+export GR_PREFS_PATH="${XDG_CONFIG_HOME}/gnuradio"
+export GTK2_RC_FILES="${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
+export GTK_RC_FILES="${XDG_CONFIG_HOME}/gtk-1.0/gtkrc"
+export HOUDINI_USER_PREF_DIR="${XDG_CACHE_HOME}/houdini__HVER__"
+export ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
+export IMAPFILTER_HOME="${XDG_CONFIG_HOME}/imapfilter"
+export IPFS_PATH="${XDG_DATA_HOME}/ipfs"
+export IRBRC="${XDG_CONFIG_HOME}/irb/irbrc"
+export KDEHOME="${XDG_CONFIG_HOME}/kde"
+export KODI_DATA="${XDG_DATA_HOME}/kodi"
+export KSCRIPT_CACHE_DIR="${XDG_CACHE_HOME}/kscript"
+export LEDGER_FILE="${XDG_DATA_HOME}/hledger.journal"
+export LEIN_HOME="${XDG_DATA_HOME}/lein"
+export LYNX_CFG_PATH="${XDG_CONFIG_HOME}/lynx.cfg"
+export MATHEMATICA_USERBASE="${XDG_CONFIG_HOME}/mathematica"
+export MAXIMA_USERDIR="${XDG_CONFIG_HOME}/maxima"
+export MEDNAFEN_HOME="${XDG_CONFIG_HOME}/mednafen"
+export MIX_XDG="true"
+export MOST_INITFILE="${XDG_CONFIG_HOME}/mostrc"
+export NODENV_ROOT="${XDG_DATA_HOME}/nodenv"
+export NODE_REPL_HISTORY="${XDG_DATA_HOME}/node_repl_history"
+export NUGET_PACKAGES="${XDG_CACHE_HOME}/NuGetPackages"
+export N_PREFIX="${XDG_DATA_HOME}/n"
+export OCTAVE_HISTFILE="${XDG_CACHE_HOME}/octave-hsts"
+export OCTAVE_SITE_INITFILE="${XDG_CONFIG_HOME}/octave/octaverc"
+export OLLAMA_MODELS="${XDG_DATA_HOME}/ollama/models"
+export OMNISHARPHOME="${XDG_CONFIG_HOME}/omnisharp"
+export OPAMROOT="${XDG_DATA_HOME}/opam"
+export PARALLEL_HOME="${XDG_CONFIG_HOME}/parallel"
+export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/pass"
+export PGSERVICEFILE="${XDG_CONFIG_HOME}/pg/pg_service.conf"
+export PLATFORMIO_CORE_DIR="${XDG_DATA_HOME}/platformio"
+export PLTUSERHOME="${XDG_DATA_HOME}/racket"
+export PSQL_HISTORY="${XDG_STATE_HOME}/psql_history"
+export RBENV_ROOT="${XDG_DATA_HOME}/rbenv"
+export RECOLL_CONFDIR="${XDG_CONFIG_HOME}/recoll"
+export REDISCLI_HISTFILE="${XDG_DATA_HOME}/redis/rediscli_history"
+export REDISCLI_RCFILE="${XDG_CONFIG_HOME}/redis/redisclirc"
+export RIPGREP_CONFIG_PATH="${XDG_CONFIG_HOME}/ripgrep/config"
+export RLWRAP_HOME="${XDG_DATA_HOME}/rlwrap"
+export RUFF_CACHE_DIR="${XDG_CACHE_HOME}/ruff"
+export RXVT_SOCKET="${XDG_RUNTIME_DIR}/urxvtd"
+export SINGULARITY_CACHEDIR="${XDG_CACHE_HOME}/singularity"
+export SINGULARITY_CONFIGDIR="${XDG_CONFIG_HOME}/singularity"
+export SOLARGRAPH_CACHE="${XDG_CACHE_HOME}/solargraph"
+export SPACEMACSDIR="${XDG_CONFIG_HOME}/spacemacs"
+export SSB_HOME="${XDG_DATA_HOME}/zoom"
+export STACK_ROOT="${XDG_DATA_HOME}/stack"
+export STACK_XDG=1
+export STARSHIP_CACHE="${XDG_CACHE_HOME}/starship"
+export STARSHIP_CONFIG="${XDG_CONFIG_HOME}/starship.toml"
+export TEXMACS_HOME_PATH="${XDG_STATE_HOME}/texmacs"
+export TEXMFCONFIG="${XDG_CONFIG_HOME}/texlive/texmf-config"
+export TEXMFHOME="${XDG_DATA_HOME}/texmf"
+export TEXMFVAR="${XDG_CACHE_HOME}/texlive/texmf-var"
+export TRAVIS_CONFIG_PATH="${XDG_CONFIG_HOME}/travis"
+export TS3_CONFIG_DIR="${XDG_CONFIG_HOME}/ts3client"
+export UNCRUSTIFY_CONFIG="${XDG_CONFIG_HOME}/uncrustify/uncrustify.cfg"
+export UNISON="${XDG_DATA_HOME}/unison"
+export VAGRANT_ALIAS_FILE="${XDG_DATA_HOME}/vagrant/aliases"
+export VAGRANT_HOME="${XDG_DATA_HOME}/vagrant"
+export VIMPERATOR_INIT=":source ${XDG_CONFIG_HOME}/vimperator/vimperatorrc"
+export VIMPERATOR_RUNTIME="${XDG_CONFIG_HOME}/vimperator"
+export W3M_DIR="${XDG_STATE_HOME}/w3m"
+export WAKATIME_HOME="${XDG_CONFIG_HOME}/wakatime"
+export WINEPREFIX="${XDG_DATA_HOME}/wineprefixes/default"
+export WORKON_HOME="${XDG_DATA_HOME}/virtualenvs"
+export X3270PRO="${XDG_CONFIG_HOME}/x3270/config"
 # Deactivated as it seems to break java/awt applications
 #export XAUTHORITY="${XDG_RUNTIME_DIR}/Xauthority"
-XCOMPOSECACHE="${XDG_CACHE_HOME}/X11/xcompose"
-XCOMPOSEFILE="${XDG_CONFIG_HOME}/X11/xcompose"
-XINITRC="${XDG_CONFIG_HOME}/X11/xinitrc"
-XSERVERRC="${XDG_CONFIG_HOME}/X11/xserverrc"
-_Z_DATA="${XDG_DATA_HOME}/z"
+export XCOMPOSECACHE="${XDG_CACHE_HOME}/X11/xcompose"
+export XCOMPOSEFILE="${XDG_CONFIG_HOME}/X11/xcompose"
+export XINITRC="${XDG_CONFIG_HOME}/X11/xinitrc"
+export XSERVERRC="${XDG_CONFIG_HOME}/X11/xserverrc"
+export _Z_DATA="${XDG_DATA_HOME}/z"
 
 
 #==============================================================================
@@ -470,21 +470,21 @@ umask 027
 # Add user-specific binary directories to PATH
 if [ -d "${HOME}/bin" ]; then
     # Personal binaries
-    PATH="${HOME}/bin:${PATH}"
+    export PATH="${HOME}/bin:${PATH}"
 fi
 if [ -d "${HOME}/.local/bin" ]; then
     # Local user binaries
-    PATH="${HOME}/.local/bin:${PATH}"
+    export PATH="${HOME}/.local/bin:${PATH}"
 fi
 # Add language-specific paths
 if [ -d "${BUN_INSTALL}" ]; then
     # Bun runtime
-    PATH="${BUN_INSTALL}:${PATH}"
+    export PATH="${BUN_INSTALL}:${PATH}"
 fi
 # Add development tool paths
 if [ -d "${XDG_DATA_HOME}/JetBrains/Toolbox/scripts" ]; then
     # JetBrains tools
-    PATH="${XDG_DATA_HOME}/JetBrains/Toolbox/scripts:${PATH}"
+    export PATH="${XDG_DATA_HOME}/JetBrains/Toolbox/scripts:${PATH}"
 fi
 
 
@@ -525,18 +525,18 @@ fi
 #------------------------------------------------------------------------------
 # Colored message output functions for different types of messages
 # Error messages
-__error()   { printf "${FG_RED}[ERROR]: %b${ENDENC}\n" "$*" >&2; }
+export __error()   { printf "${FG_RED}[ERROR]: %b${ENDENC}\n" "$*" >&2; }
 # Warning messages
-__warning() { printf "${FG_YELLOW}[WARN]: %b${ENDENC}\n" "$*" >&2; }
+export __warning() { printf "${FG_YELLOW}[WARN]: %b${ENDENC}\n" "$*" >&2; }
 # Information messages
-__info()    { printf "${FG_WHITE}[INFO]: %b${ENDENC}\n" "$*" >&1; }
+export __info()    { printf "${FG_WHITE}[INFO]: %b${ENDENC}\n" "$*" >&1; }
 # Debug messages
-__debug()   { printf "${FG_GREY}[DEBUG]: %b${ENDENC}\n" "$*" >&1; }
+export __debug()   { printf "${FG_GREY}[DEBUG]: %b${ENDENC}\n" "$*" >&1; }
 #------------------------------------------------------------------------------
 # FZF Integration Functions
 #------------------------------------------------------------------------------
 # FZF command completion runner with preview windows
-_fzf_comprun() {
+export _fzf_comprun() {
     command=$1
     shift
 
@@ -552,12 +552,12 @@ _fzf_comprun() {
     esac
 }
 # Interactive directory navigation with FZF
-fcd() {
+export fcd() {
     directory=$(find ${1:-.} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf +m) && \
     cd "${directory}"
 }
 # Find in files using grep and edit
-fif() {
+export fif() {
     if [ ! "$#" -gt 0 ]; then
         echo "Need a string to search for!"
         return 1
@@ -567,17 +567,17 @@ fif() {
     [ -n "${fileToEdit}" ] && ${EDITOR:-vim} "${fileToEdit}"
 }
 # Interactive environment variable viewer
-fenv() {
+export fenv() {
     outEnv=$(env | fzf)
     echo $(echo ${outEnv} | cut -d= -f2)
 }
 # Interactive process killer
-fkill() {
+export fkill() {
     pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
     [ "x$pid" != "x" ] && echo $pid | xargs kill -${1:-9}
 }
 # SSH host selector
-fssh() {
+export fssh() {
     if [ -f ~/.ssh/config ]; then
         sshhost=$(grep "^Host " ~/.ssh/config | grep -v "[?*]" | cut -d ' ' -f 2- | fzf)
         [ ! -z "$sshhost" ] && ssh "$sshhost"
@@ -589,11 +589,11 @@ fssh() {
 # Git Integration Functions
 #------------------------------------------------------------------------------
 # Interactive git add with preview
-gadd() {
+export gadd() {
     git ls-files -m -o --exclude-standard | fzf -m --preview 'git diff --color=always {} | head -500' | xargs -r git add
 }
 # Create .gitignore file using gitignore.io
-gitignore() {
+export gitignore() {
     if [ -z "$1" ] || [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
         AVAILABLE_FORMATS="$(curl --silent --fail --location https://www.gitignore.io/api/list | tr ',' '\n' | column --fillrows)"
         echo 'Available formats:'
@@ -604,7 +604,7 @@ gitignore() {
     fi
 }
 # Fetch and pull all git branches
-gitPullAll() {
+export gitPullAll() {
     if [ "$(git rev-parse --is-inside-work-tree 2> /dev/null)" = "true" ]; then
         git branch -r | \
         grep -v '\->' | \
@@ -621,7 +621,7 @@ gitPullAll() {
 # AWS Integration Functions
 #------------------------------------------------------------------------------
 # AWS profile selector
-aws_profile() {
+export aws_profile() {
     if [ -f ~/.aws/credentials ]; then
         profile=$(grep '^\[.*\]' ~/.aws/credentials | sed 's/\[\(.*\)\]/\1/' | fzf)
         if [ ! -z "$profile" ]; then
@@ -634,7 +634,7 @@ aws_profile() {
     fi
 }
 # AWS region selector
-aws_region() {
+export aws_region() {
     regions="
         af-south-1
         ap-east-1
@@ -671,11 +671,11 @@ aws_region() {
     [ ! -z "$region" ] && export AWS_DEFAULT_REGION="$region" && echo "AWS Region set to: $region"
 }
 # Combined AWS setup function
-aws_setup() {
+export aws_setup() {
     aws_profile && aws_region
 }
 # AWS resource explorer
-aws_resource_search() {
+export aws_resource_search() {
     resource_types="
         ec2:instances
         ec2:volumes
@@ -696,7 +696,7 @@ aws_resource_search() {
 # Terraform Management Functions
 #------------------------------------------------------------------------------
 # Terraform workspace selector
-tf_workspace() {
+export tf_workspace() {
     if [ -d .terraform ]; then
         terraform workspace list | grep -v "^*" | sed 's/^  //' | fzf | xargs terraform workspace select
     else
@@ -705,7 +705,7 @@ tf_workspace() {
     fi
 }
 # Terraform state viewer
-tf_state_view() {
+export tf_state_view() {
     if [ -f terraform.tfstate ]; then
         terraform state list | fzf --preview "terraform state show {}"
     else
@@ -714,7 +714,7 @@ tf_state_view() {
     fi
 }
 # Interactive Terraform plan
-tf_plan() {
+export tf_plan() {
     if [ ! -d .terraform ]; then
         echo "Not a Terraform directory or not initialized"
         return 1
@@ -753,11 +753,11 @@ tf_plan() {
     fi
 }
 # Terraform plan viewer
-tf_plan_view() {
+export tf_plan_view() {
     find . -name "*.tfplan" | fzf --preview "terraform show {}"
 }
 # Apply latest Terraform plan
-tf_apply() {
+export tf_apply() {
     latest_plan=$(find . -name "tfplan_*" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")
     if [ ! -z "$latest_plan" ]; then
         echo "Found latest plan: $latest_plan"
@@ -770,7 +770,7 @@ tf_apply() {
     fi
 }
 # Safe Terraform destroy with confirmations
-tf_destroy() {
+export tf_destroy() {
     if [ ! -d .terraform ]; then
         echo "Not a Terraform directory or not initialized"
         return 1
@@ -833,7 +833,7 @@ tf_destroy() {
 # Utility Functions
 #------------------------------------------------------------------------------
 # Secure file copy over SSH using rsync
-ssh_copy() {
+export ssh_copy() {
     HOST="${1}"
     PORT="${2}"
     USER="${3}"
@@ -859,7 +859,7 @@ ssh_copy() {
         --rsh="ssh -p ${PORT}" "${SOURCE}" "${USER}"@"${HOST}":"${TARGET}"
 }
 # GPG key management
-__gpg_upload() {
+export __gpg_upload() {
     fingerprint="${1}"
 
     # Upload to multiple keyservers for redundancy
