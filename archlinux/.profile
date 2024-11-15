@@ -445,9 +445,20 @@ export FZF_DEFAULT_OPTS="--ansi"
 export FZF_DEFAULT_COMMAND="find . -type f -not -path '*/\.git/*' -not -path '*/\.terraform/*'"
 # Configure specific commands for different operations
 # Ctrl-T file search
-export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
-# Alt-T directory search
-export FZF_ALT_T_COMMAND="find . -type d -not -path '*/\.git/*' -not -path '*/\.terraform/*'"
+export FZF_CTRL_T_OPTS="
+  --walker-skip .git,.next,.terraform,node_modules,target
+  --preview 'bat -n --color=always {}'
+  --bind 'ctrl-/:change-preview-window(down|hidden|)'
+  --header 'Find files (Ctrl + / to switch preview)'"
+# Alt-C directory search
+export FZF_ALT_C_OPTS="
+  --walker-skip .git,.next,.terraform,node_modules,target
+  --preview 'tree -C {}'
+  --bind 'ctrl-/:change-preview-window(down|hidden|)'
+  --header 'Find subdirectories (Ctrl + / to switch preview)'"
+export FZF_CTRL_R_OPTS="
+  --color header:italic
+  --header 'Search history'"
 #------------------------------------------------------------------------------
 # Path Configuration
 #------------------------------------------------------------------------------
