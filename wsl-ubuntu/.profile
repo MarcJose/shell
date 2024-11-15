@@ -1150,6 +1150,22 @@ alias fopen='xdg-open $(fzf)'
 # History search
 alias fhistory='history | fzf | cut -c8-'
 #------------------------------------------------------------------------------
+# WSL Aliases for SSH agent usage (eg. KeePassXC)
+#------------------------------------------------------------------------------
+alias scp="\"$(wslpath "C:/Program Files/OpenSSH/scp.exe")\""
+alias sftp-server="\"$(wslpath "C:/Program Files/OpenSSH/sftp-server.exe")\""
+alias sftp="\"$(wslpath "C:/Program Files/OpenSSH/sftp.exe")\""
+alias ssh-add="\"$(wslpath "C:/Program Files/OpenSSH/ssh-add.exe")\""
+alias ssh-agent="\"$(wslpath "C:/Program Files/OpenSSH/ssh-agent.exe")\""
+alias ssh-keygen="\"$(wslpath "C:/Program Files/OpenSSH/ssh-keygen.exe")\""
+alias ssh-keyscan="\"$(wslpath "C:/Program Files/OpenSSH/ssh-keyscan.exe")\""
+alias ssh-pkcs11-helper="\"$(wslpath "C:/Program Files/OpenSSH/ssh-pkcs11-helper.exe")\""
+alias ssh-shellhost="\"$(wslpath "C:/Program Files/OpenSSH/ssh-shellhost.exe")\""
+alias ssh-sk-helper="\"$(wslpath "C:/Program Files/OpenSSH/ssh-sk-helper.exe")\""
+alias ssh="\"$(wslpath "C:/Program Files/OpenSSH/ssh.exe")\""
+alias sshd="\"$(wslpath "C:/Program Files/OpenSSH/sshd.exe")\""
+export GIT_SSH_COMMAND="\"$(wslpath "C:/Program Files/OpenSSH/ssh.exe")\""
+#------------------------------------------------------------------------------
 # Miscellaneous Aliases
 #------------------------------------------------------------------------------
 # Help command
