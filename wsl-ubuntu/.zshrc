@@ -13,20 +13,19 @@ umask 022
 # Source profile file for environment variables and basic setup
 . ~/.profile
 # Enable command-not-found suggestion functionality
-. /etc/zsh/command-not-found.zsh
+. /etc/zsh_command_not_found
 
 
 #------------------------------------------------------------------------------
 # Plugin Configuration
 #------------------------------------------------------------------------------
 # Enable syntax highlighting for commands (must be sourced before other plugins)
-. /usr/share/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+. /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Configure fuzzy finder (fzf) for enhanced file/history search
 . /usr/share/doc/fzf/examples/key-bindings.zsh
 . /usr/share/doc/fzf/examples/completion.zsh
-. <(fzf --zsh)
 # Enable fish-like autosuggestions based on command history
-. /usr/share/zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+. /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Use both history and completion for suggestions
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Enable async mode for better performance
@@ -279,17 +278,17 @@ alias cd='z'
 # Enable Bun completion if installed
 [ -s "${BUN_INSTALL}/_bun" ] && . "${BUN_INSTALL}/_bun"
 # Enable Deno completion if installed
-[[ ":$FPATH" != *"${XDG_CONFIG_HOME}/zsh/completions"* ]] && export FPATH="${XDG_CONFIG_HOME}/zsh/completions:${FPATH}"
+[[ ":$FPATH:" != *":${XDG_CONFIG_HOME}/zsh/completions:"* ]] && export FPATH="${XDG_CONFIG_HOME}/zsh/completions:$FPATH"
 
 
 #------------------------------------------------------------------------------
 # WSL Configuration
 #------------------------------------------------------------------------------
 ss -a | grep -q ${SSH_AUTH_SOCK}
-if [ $= -ne 0 ]; then
-    rm -f ${SSH_AUTH_SOCK}
-    npiperelaypath=$(wslpath "C:/Program Files/npiperelay")
-    (setsid socat UNIX-LISTEN:${SSH_AUTH_SOCK},fork EXEC:"${npiperelaypath}/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork &) > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  rm -f ${SSH_AUTH_SOCK}
+  npiperelaypath=$(wslpath "C:/Program Files/npiperelay")
+  (setsid socat UNIX-LISTEN:${SSH_AUTH_SOCK},fork EXEC:"${npiperelaypath}/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork &) >/dev/null 2>&1
 fi
 
 
