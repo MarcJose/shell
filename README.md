@@ -38,14 +38,28 @@ Streamlined configuration files for zsh, bash, and PowerShell across Linux distr
 ### Linux/WSL (ZSH)
 
 ```shell
-cp $os/.profile ~/.profile
-cp $os/.zshrc ~/.zshrc
+# Archlinux
+wget -O ~/.profile "https://raw.githubusercontent.com/MarcJose/shell/main/archlinux/.profile"
+wget -O ~/.zshrc   "https://raw.githubusercontent.com/MarcJose/shell/main/archlinux/.zshrc"
+
+# Ubuntu 24.04LTS
+wget -O ~/.profile "https://raw.githubusercontent.com/MarcJose/shell/main/ubuntu/.profile"
+wget -O ~/.zshrc   "https://raw.githubusercontent.com/MarcJose/shell/main/ubuntu/.zshrc"
+
+# Ubuntu 24.04LTS (WSL)
+wget -O ~/.profile "https://raw.githubusercontent.com/MarcJose/shell/main/wsl-ubuntu/.profile"
+wget -O ~/.zshrc   "https://raw.githubusercontent.com/MarcJose/shell/main/wsl-ubuntu/.zshrc"
 ```
 
 ### Windows (PowerShell)
 
 ```powershell
-Copy-Item windows/Microsoft.PowerShell_profile.ps1 $PROFILE
+# As Administrator
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+iex "& { $(irm https://raw.githubusercontent.com/MarcJose/shell/main/windows/install.ps1) } -CreateSymLink -Force -CreateLocalProfile"
+
+# As user
+iex "& { $(irm https://raw.githubusercontent.com/MarcJose/shell/main/windows/custom.ps1) } -Force"
 ```
 
 ## Updates
