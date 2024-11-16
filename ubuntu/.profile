@@ -17121,10 +17121,10 @@ alias gpg-upload='gpg --send-keys'
 # fzf Integrations
 #------------------------------------------------------------------------------
 ## Package manager
-alias fsearch='apt-cache search . | sort | fzf --multi --preview "apt-cache show {1}"'
-alias finstall='apt-cache search . | sort | fzf --multi --preview "apt-cache show {1}" | cut -d " " -f1 | xargs -ro sudo apt install'
-alias fremove='dpkg -l | sed 1,5d | awk "{print \$2}" | fzf --multi --preview "apt-cache show {1}" | xargs -ro sudo apt remove'
-alias funinstall='dpkg -l | sed 1,5d | awk "{print \$2}" | fzf --multi --preview "apt-cache show {1}" | xargs -ro sudo apt purge'
+alias fsearch='apt-cache search . | sort | fzf --multi --preview "apt-cache show {}"'
+alias finstall='apt-cache search . | sort | fzf --multi --preview "apt-cache show {}" | cut -d " " -f1 | xargs -ro sudo apt install'
+alias fremove='dpkg -l | sed 1,5d | awk '\''{print $2}'\'' | fzf --multi --preview "apt-cache show {}" | xargs -ro sudo apt remove'
+alias funinstall='dpkg -l | sed 1,5d | awk '\''{print $2}'\'' | fzf --multi --preview "apt-cache show {}" | xargs -ro sudo apt purge'
 # Bat/Cat integration
 if command -v bat >/dev/null 2>&1; then
     # If bat is available, use it

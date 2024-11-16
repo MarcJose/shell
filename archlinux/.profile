@@ -17132,10 +17132,10 @@ alias gpg-upload='gpg --send-keys'
 # fzf Integrations
 #------------------------------------------------------------------------------
 ## Package manager
-alias fsearch='sudo pacman -Fy; pacman -Slq | fzf --multi --preview "cat <(pacman -Si {1}) <(pacman -Fl {1} | awk "{print \$2}")"'
-alias finstall='sudo pacman -Fy; pacman -Slq | fzf --multi --preview "cat <(pacman -Si {1}) <(pacman -Fl {1} | awk "{print \$2}")" | xargs -ro sudo pacman -S'
-alias fremove='pacman -Qq | fzf --multi --preview "pacman -Qi {1}" | xargs -ro sudo pacman -Rns'
-alias funinstall='pacman -Qq | fzf --multi --preview "pacman -Qi {1}" | xargs -ro sudo pacman -Rns'
+alias fsearch='sudo pacman -Fy; pacman -Slq | fzf --multi --preview "cat <(pacman -Si {}) <(pacman -Fl {} | awk '\''{print $2}'\'')"'
+alias finstall='sudo pacman -Fy; pacman -Slq | fzf --multi --preview "cat <(pacman -Si {}) <(pacman -Fl {} | awk '\''{print $2}'\'')" | xargs -ro sudo pacman -S'
+alias fremove='pacman -Qq | fzf --multi --preview "pacman -Qi {}" | xargs -ro sudo pacman -Rns'
+alias funinstall='pacman -Qq | fzf --multi --preview "pacman -Qi {}" | xargs -ro sudo pacman -Rns'
 # Bat/Cat integration
 if command -v bat >/dev/null 2>&1; then
     # If bat is available, use it
