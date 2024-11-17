@@ -225,12 +225,6 @@ function Install-Scoop {
         # Install Scoop
         Invoke-RestMethod get.scoop.sh | Invoke-Expression
 
-        # Add extra buckets
-        Write-Status "Adding Scoop buckets..."
-        scoop bucket add extras
-        scoop bucket add versions
-        scoop bucket add nerd-fonts
-
         # Update Scoop
         Write-Status "Updating Scoop..."
         scoop update

@@ -50,13 +50,13 @@ function Install-ScoopPackages {
         # Install git first if not present
         if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
             Write-Status "Installing git..."
-            scoop install main/git
+            scoop install main/git                       # Git
             reg import "$env:USERPROFILE\scoop\apps\git\current\install-context.reg"
             reg import "$env:USERPROFILE\scoop\apps\git\current\install-file-associations.reg"
-            scoop install main/git-lfs
-            scoop install main/git-crypt
-            scoop install main/gnupg
-            scoop install main/aria2
+            scoop install main/git-lfs                   # Git-LFS
+            scoop install main/git-crypt                 # Git-Crypt
+            scoop install main/gnupg                     # GNUPg Encryption and Signing Tool
+            scoop install main/aria2                     # Aria2 Downloading Tool
             scoop config aria2-warning-enabled false
         }
 
@@ -82,43 +82,53 @@ function Install-ScoopPackages {
         scoop install main/7zip
         reg import "$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg"
 
-        scoop install extras/vcredist
-        scoop install extras/git-credential-manager
-        scoop install extras/keepassxc
 
-        scoop install extras/libreoffice
-        scoop install extras/onlyoffice-desktopeditors
-        scoop install extras/notepadplusplus
+        scoop install extras/vcredist                    # Microsoft Visual C++ Redistributable
+        scoop install extras/git-credential-manager      # Git Credentials Manager
+        scoop install extras/keepassxc                   # KeePassXC Password Manager
+
+        # Office
+        scoop install extras/libreoffice                 # LibreOffice
+        scoop install extras/onlyoffice-desktopeditors   # OnlyOffice
+        scoop install extras/notepadplusplus             # Notepad++
         reg import "$env:USERPROFILE\scoop\apps\notepadplusplus\current\install-context.reg"
-        scoop install extras/obsidian
-        scoop install extras/krita
-        scoop install extras/kate
-        scoop install extras/okular
+        scoop install extras/obsidian                    # Obsidian
+        scoop install extras/krita                       # Krita
+        scoop install extras/kate                        # Kate
+        scoop install extras/okular                      # Okular
 
-        scoop install extras/vlc
-        scoop install extras/inkscape
-        scoop install extras/gimp
+        # Media
+        scoop install extras/vlc                         # VLC
+        scoop install extras/inkscape                    # Inkscape
+        scoop install extras/gimp                        # Gimp
 
-        scoop install extras/firefox
-        scoop install extras/chromium
+        # Internet
+        scoop install extras/firefox                     # Firefox
+        scoop install extras/chromium                    # Chromium
 
-        scoop install extras/vscode
+        # Programming / IDE's
+        scoop install extras/vscode                      # Visual Studio Code
         reg import "$env:USERPROFILE\scoop\apps\vscode\current\install-context.reg"
         reg import "$env:USERPROFILE\scoop\apps\vscode\current\install-associations.reg"
-        scoop install extras/jetbrains-toolbox
+        scoop install extras/jetbrains-toolbox           # Jetbrains Toolbox
 
-        scoop install extras/mattermost
-        scoop install extras/slack
-        scoop install extras/element
-        scoop install extras/rocketchat-client
-        scoop install extras/signal
-        scoop install extras/telegram
-        scoop install extras/zoom
+        # Communication
+        scoop install extras/mattermost                  # Mattermost
+        scoop install extras/slack                       # Slack
+        scoop install extras/element                     # Element
+        scoop install extras/rocketchat-client           # Rocket Chat
+        scoop install extras/signal                      # Signal
+        scoop install extras/telegram                    # Telegram
+        scoop install extras/zoom                        # Zoom
 
+        # Windows
         scoop install extras/windows-terminal
         reg import "$env:USERPROFILE\scoop\apps\windows-terminal\current\install-context.reg"
         scoop install extras/microsoft-teams
+        scoop install nonportable/office-365-apps-np
+        scoop install nonportable/powertoys-np
 
+        # Nerd Fonts
         scoop install nerd-fonts/DejaVuSansMono-NF
         scoop install nerd-fonts/DejaVuSansMono-NF-Mono
         scoop install nerd-fonts/DejaVuSansMono-NF-Propo
@@ -129,12 +139,14 @@ function Install-ScoopPackages {
         scoop install nerd-fonts/JetBrainsMono-NF-Mono
         scoop install nerd-fonts/JetBrainsMono-NF-Propo
 
+        # Java
         scoop install java/openjdk
         scoop install java/oraclejdk
 
-        scoop install nonportable/office-365-apps-np
-        scoop install nonportable/powertoys-np
+        # Security
         scoop install nonportable/protonvpn-np
+
+        # Virtualization
         scoop install nonportable/virtualbox-with-extension-pack-np
 
         # Update all installed packages
