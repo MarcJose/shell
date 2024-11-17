@@ -16833,7 +16833,7 @@ update_dotfiles() {
     OS=''
     if [[ -f /etc/arch-release ]]; then
         OS="archlinux"
-    elif [[ "$(uname -r)" =~ Microsoft ]]; then
+    elif [[ "$(uname -r)" =~ microsoft ]]; then
         OS="wsl-ubuntu"
     elif [[ -f /etc/ubuntu-release ]] || [[ -f /etc/lsb-release ]]; then
         OS="ubuntu"
