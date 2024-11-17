@@ -57,6 +57,7 @@ function Install-ScoopPackages {
             scoop install main/git-crypt                 # Git-Crypt
             scoop install main/gnupg                     # GNUPg Encryption and Signing Tool
             scoop install main/aria2                     # Aria2 Downloading Tool
+            scoop install main/fzf                       # FZF
             scoop config aria2-warning-enabled false
         }
 
@@ -86,6 +87,7 @@ function Install-ScoopPackages {
         scoop install extras/vcredist                    # Microsoft Visual C++ Redistributable
         scoop install extras/git-credential-manager      # Git Credentials Manager
         scoop install extras/keepassxc                   # KeePassXC Password Manager
+        #scoop install extras/sysinternals                # Microsoft Sysinternals
 
         # Office
         scoop install extras/libreoffice                 # LibreOffice
@@ -94,7 +96,7 @@ function Install-ScoopPackages {
         reg import "$env:USERPROFILE\scoop\apps\notepadplusplus\current\install-context.reg"
         scoop install extras/obsidian                    # Obsidian
         scoop install extras/krita                       # Krita
-        scoop install extras/kate                        # Kate
+        #scoop install extras/kate                        # Kate
         scoop install extras/okular                      # Okular
 
         # Media
@@ -144,7 +146,7 @@ function Install-ScoopPackages {
         scoop install java/oraclejdk
 
         # Security
-        scoop install nonportable/protonvpn-np
+        #scoop install nonportable/protonvpn-np
 
         # Virtualization
         scoop install nonportable/virtualbox-with-extension-pack-np
@@ -210,7 +212,7 @@ function Install-VSCodeExtensions {
 
         foreach ($extension in $extensions) {
             Write-Status "Installing extension: $extension"
-            "$env:USERPROFILE\scoop\apps\vscode\current\bin\code" --install-extension $extension
+            code --install-extension $extension
         }
 
         Write-Status "VSCode extensions installed successfully" -Color "Green"
