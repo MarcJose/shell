@@ -1,6 +1,8 @@
 # Enable TLS 1.2 for compatibility with older PowerShell versions
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
+
+$PROFILE_LOCAL = Join-Path (Split-Path $PROFILE) "Microsoft.PowerShell_profile.local.ps1"
 $SCRIPT_VERSION = "1.0.0"
 $GITHUB_REPO_URL = "https://raw.githubusercontent.com/MarcJose/shell/main/windows/Microsoft.PowerShell_profile.ps1"
 $UPDATE_CHECK_FILE = Join-Path $env:TEMP "ps_profile_last_check.txt"
@@ -40,7 +42,7 @@ function Install-RequiredModule {
         }
 
         Import-Module -Name $ModuleName -ErrorAction Stop
-        Write-Host "Successfully imported $ModuleName"
+        #Write-Host "Successfully imported $ModuleName"
     }
     catch {
         Write-Error "Failed to install/import $ModuleName : $_"
@@ -126,7 +128,7 @@ function Prompt {
     }
 
     # Add PowerShell version
-    $promptString += "[$ESC[36mPS $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor)$ESC[0m]"
+    #$promptString += "[$ESC[36mPS $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor)$ESC[0m]"
 
     return "$promptString`n➤ "
 }
@@ -1017,7 +1019,7 @@ function Update-PowerShell-Profile {
             throw "No internet connection available"
         }
 
-        Write-Host "Checking for profile updates..."
+        #Write-Host "Checking for profile updates..."
         $tempFile = Join-Path $env:TEMP "Microsoft.PowerShell_profile.ps1"
         $paths = Get-PowerShellPaths
 
@@ -1056,7 +1058,7 @@ function Update-PowerShell-Profile {
             return $true
         }
         else {
-            Write-Host "Profile is already up to date"
+            #Write-Host "Profile is already up to date"
             return $false
         }
     }
@@ -1085,7 +1087,7 @@ Set-Alias -Name sudo -Value Start-ProcessAsAdmin
 
 # Check for updates once per boot
 if (-not (Test-UpdateCheckedSinceBoot)) {
-    Write-Host "Checking for profile updates since last boot..."
+    #Write-Host "Checking for profile updates since last boot..."
     Update-PowerShell-Profile
 }
 

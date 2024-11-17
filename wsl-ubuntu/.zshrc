@@ -13,7 +13,7 @@ umask 022
 # Source profile file for environment variables and basic setup
 . ~/.profile
 # Enable command-not-found suggestion functionality
-. /etc/zsh_command_not_found
+.  /etc/zsh_command_not_found
 
 
 #------------------------------------------------------------------------------

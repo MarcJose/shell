@@ -123,16 +123,13 @@ function Remove-DefaultBloat {
     foreach ($app in $apps) {
         try {
             $appVersion = (Get-AppxPackage -Name $app).Version
-              Get-AppxPackage -Name $app -AllUsers `
-                    | Remove-AppxPackage -AllUsers
-                Get-AppXProvisionedPackage -Online `
-                    | Where-Object DisplayName -EQ $app `
-                    | Remove-AppxProvisionedPackage -Online
-                $appPath="$Env:LOCALAPPDATA\Packages\$app*"
-                Remove-Item $appPath -Recurse -Force -ErrorAction 0
+              Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -AllUsers
+              Get-AppXProvisionedPackage -Online | Where-Object DisplayName -EQ $app | Remove-AppxProvisionedPackage -Online
+              $appPath="$Env:LOCALAPPDATA\Packages\$app*"
+              Remove-Item $appPath -Recurse -Force -ErrorAction 0
         }
         catch {
-          Write-Status "Failed to remove bloat package: $_" -Color "Red"
+          Write-Status "Failed to remove bloat package '$app': $_" -Color "Red"
         }
     }
 }
