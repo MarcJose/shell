@@ -512,8 +512,8 @@ if [ -d '/opt/anaconda/bin' ]; then
     unset __conda_setup
 fi
 # Load Node Version Manager if available
-if [ -f /usr/share/nvm/init-nvm.sh ]; then
-    . /usr/share/nvm/init-nvm.sh > /dev/null
+if [ -s "${NVM_DIR}/nvm.sh" ]; then
+    . "${NVM_DIR}/nvm.sh" > /dev/null
 fi
 # Load Deno if available
 if [ -f "${HONE}/deno/env" ]; then
