@@ -96,7 +96,7 @@ function Install-ScoopPackages {
         reg import "$env:USERPROFILE\scoop\apps\notepadplusplus\current\install-context.reg"
         scoop install extras/obsidian                    # Obsidian
         scoop install extras/krita                       # Krita
-        #scoop install extras/kate                        # Kate
+        scoop install extras/kate                        # Kate
         scoop install extras/okular                      # Okular
 
         # Media
@@ -184,6 +184,7 @@ function Install-VSCodeExtensions {
             "VisualStudioExptTeam.vscodeintellicode-completions",
             "VisualStudioExptTeam.vscodeintellicode-insiders",
 
+            "ms-edgedevtools.vscode-edge-devtools",
 
             "EditorConfig.EditorConfig",                            # EditorConfig
             'esbenp.prettier-vscode',                               # Prettier
@@ -193,6 +194,7 @@ function Install-VSCodeExtensions {
 
             'ms-vscode-remote.remote-wsl',                          # WSL
             'ms-vscode-remote.remote-ssh',                          # Remote SSH
+            "ms-vscode-remote.remote-ssh-edit"                      # Remote SSH (Configs)
             'ms-vscode.remote-explorer',                            # Remote Explorer
             "tomsaunders.vscode-workspace-explorer",                # Workspace Explorer
 
@@ -205,6 +207,16 @@ function Install-VSCodeExtensions {
             'redhat.vscode-yaml',                                   # YAML
             "mechatroner.rainbow-csv",                              # CSV
             "jock.svg",                                             # SVG
+            "bierner.markdown-checkbox"                             # Markdown Checkboxes
+            "bierner.markdown-emoji"                                # Markdown Emojis
+            "bierner.markdown-footnotes"                            # Markdown Footnotes
+            "bierner.markdown-preview-github-styles"                # Markdown Preview Github
+            "bierner.markdown-mermaid"                              # Markdown Mermaid Diagrams
+            "bierner.markdown-yaml-preamble"                        # Markdown YAML
+            "johnpapa.read-time"                                    # Reading Time
+            "ms-vscode.wordcount"                                   # Word Count
+
+            "ms-vscode.powershell"
 
             'ms-vscode.live-server',                                # Live Server
             'ms-vsliveshare.vsliveshare'                            # Live Share
