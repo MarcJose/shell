@@ -129,6 +129,7 @@ function Install-ScoopPackages {
         scoop install extras/microsoft-teams
         scoop install nonportable/office-365-apps-np
         scoop install nonportable/powertoys-np
+        Invoke-Expression -Command "$env:USERPROFILE\scoop\apps\powertoys-np\current\install-context.ps1"
 
         # Nerd Fonts
         scoop install nerd-fonts/DejaVuSansMono-NF
@@ -146,7 +147,11 @@ function Install-ScoopPackages {
         scoop install java/oraclejdk
 
         # Security
-        #scoop install nonportable/protonvpn-np
+        scoop install nonportable/protonvpn-np
+        scoop install extras/wireshark
+        & "$env:USERPROFILE\scoop\apps\wireshark\current\npcap-installer.exe"
+        & "$env:USERPROFILE\scoop\apps\wireshark\current\USBPcapSetup-installer.exe"
+        scoop install main/nmap
 
         # Virtualization
         scoop install nonportable/virtualbox-with-extension-pack-np
