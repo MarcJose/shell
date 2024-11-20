@@ -613,7 +613,7 @@ export gitPullAll() {
             git branch --track "${remote#origin/}" "$remote"
         done
 
-        git fetch --all
+        git fetch --all --tags --prune --prune-tags
         git pull --all
     fi
 }

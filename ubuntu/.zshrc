@@ -230,22 +230,9 @@ __vcs_info_wrapper() {
 #------------------------------------------------------------------------------
 # Enhanced Prompt with Command Execution Time
 #------------------------------------------------------------------------------
-# Function to format command execution time
-__cmd_exec_time() {
-  local stop=$(date +%s)
-  local start=${cmd_timestamp:-$stop}
-  integer elapsed=$stop-$start
-  (($elapsed > 2)) && print -P "%F{yellow}${elapsed}s%f"
-}
-# Function to record command start time
-__record_time_preexec() {
-  cmd_timestamp=$(date +%s)
-}
-# Add hook for command execution time
-add-zsh-hook preexec __record_time_preexec
 # Build prompt with status, date, username, VCS info, and execution time
 __build_prompt() {
-  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][$(__cmd_exec_time)][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__vcs_info_wrapper): "
+  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__vcs_info_wrapper): "
   RPROMPT='%B%F{cyan}%2d%f%b'
 }
 # Update prompt before each command
