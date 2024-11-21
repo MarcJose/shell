@@ -128,8 +128,8 @@ function Install-ScoopPackages {
         reg import "$env:USERPROFILE\scoop\apps\windows-terminal\current\install-context.reg"
         scoop install extras/microsoft-teams
         scoop install nonportable/office-365-apps-np
-        scoop install nonportable/powertoys-np
-        Invoke-Expression -Command "$env:USERPROFILE\scoop\apps\powertoys-np\current\install-context.ps1"
+        scoop install extras/powertoys
+        Invoke-Expression -Command "$env:USERPROFILE\scoop\apps\powertoys\current\install-context.ps1"
 
         # Nerd Fonts
         scoop install nerd-fonts/DejaVuSansMono-NF
