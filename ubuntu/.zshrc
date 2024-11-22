@@ -266,6 +266,8 @@ alias cd='z'
 [ -s "${BUN_INSTALL}/_bun" ] && . "${BUN_INSTALL}/_bun"
 # Enable Deno completion if installed
 [[ ":$FPATH:" != *":${XDG_CONFIG_HOME}/zsh/completions:"* ]] && export FPATH="${XDG_CONFIG_HOME}/zsh/completions:$FPATH"
+# Enable kubectl completion if installed
+[ -x "$(command -v kubectl)" ] && . <(kubectl completion zsh)
 
 
 #------------------------------------------------------------------------------
