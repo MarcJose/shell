@@ -219,7 +219,31 @@ zstyle ':vcs_info:*' actionformats '%b|%a'
 zstyle ':vcs_info:*' formats '%b'
 zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b:%r'
 zstyle ':vcs_info:*' enable git cvs svn
-# VCS information wrapper function
+
+
+#------------------------------------------------------------------------------
+# AWS Profile Information
+#------------------------------------------------------------------------------
+__aws_profile_wrapper() {
+  if [ -n "$AWS_PROFILE" ]; then
+    echo "(%F{yellow}${AWS_PROFILE}%f)"
+  fi
+}
+
+
+#------------------------------------------------------------------------------
+# Terraform Workspace Information
+#------------------------------------------------------------------------------
+__terraform_workspace_wrapper() {
+  if [ -f ".terraform/environment" ]; then
+    local workspace=$(cat .terraform/environment)
+    echo "(%F{magenta}${workspace}%f)"
+  fi
+}
+
+#------------------------------------------------------------------------------
+# VCS Information Wrapper
+#------------------------------------------------------------------------------
 __vcs_info_wrapper() {
   vcs_info
   if [ -n "${vcs_info_msg_0_}" ]; then
@@ -233,7 +257,7 @@ __vcs_info_wrapper() {
 #------------------------------------------------------------------------------
 # Build prompt with status, date, username, VCS info, and execution time
 __build_prompt() {
-  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__vcs_info_wrapper): "
+  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__aws_profile_wrapper)$(__terraform_workspace_wrapper)$(__vcs_info_wrapper): "
   RPROMPT='%B%F{cyan}%2d%f%b'
 }
 # Update prompt before each command
