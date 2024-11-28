@@ -72,7 +72,7 @@ function Install-ScoopPackages {
             'java',         # A collection of Java development kits (JDKs) and Java runtime engines (JREs), Java's virtual machine debugging tools and Java based runtime engines.
             'nonportable',  # Non-portable apps (may trigger UAC prompts).
             'php',          # Installers for most versions of PHP.
-            'versions',     # Alternative versions of apps found in other buckets.
+            'versions'      # Alternative versions of apps found in other buckets.
         )
 
         foreach ($bucket in $buckets) {
@@ -82,7 +82,6 @@ function Install-ScoopPackages {
 
         scoop install main/7zip
         reg import "$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg"
-
 
         scoop install extras/vcredist                    # Microsoft Visual C++ Redistributable
         scoop install extras/git-credential-manager      # Git Credentials Manager

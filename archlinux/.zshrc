@@ -94,6 +94,14 @@ zstyle ':completion::complete:*' gain-privileges 1
 zstyle ':completion:*' rehash true
 # Enable faster completion for exact matches
 zstyle ':completion:*' accept-exact '*(N)'
+# Styling
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
+# Add autocomplete window
+zstyle ':autocomplete:*' default-context history-incremental-search-backward
 # Initialize completion system
 COMPLETIONCACHE="${XDG_CACHE_HOME}/zsh/zcompdump-${ZSH_VERSION}"
 if [ ! -d "${COMPLETIONCACHE}" ]; then
