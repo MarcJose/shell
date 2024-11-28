@@ -439,15 +439,20 @@ export LD_LIBRARY_PATH='${IBM_DB_HOME}/lib:${LD_LIBRARY_PATH}'
 # FZF (Fuzzy Finder) Configuration
 #------------------------------------------------------------------------------
 # Configure the fuzzy finder tool behavior
-# Enable ANSI color support
-export FZF_DEFAULT_OPTS="--ansi"
+export FZF_COMPLETION_OPTS='--border --info=inline --ansi'
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --info=inline \
+  --preview-window=:hidden \
+  --preview '([[ -f {} ]] && ( --style=numbers --color=always {} || cat {})) \
+    || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200' \
+  --bind '?:toggle-preview'"
 # Define default command to use for file search
-export FZF_DEFAULT_COMMAND="find . -type f -not -path '*/\.git/*' -not -path '*/\.terraform/*'"
+export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --exclude .git --exclude .git-crypt --exclude .next --exclude .terraform --exclude node_modules --exclude target'
+# Enable fzf completion for ** patterns
+export FZF_COMPLETION_TRIGGER='**'
 # Configure specific commands for different operations
 # Ctrl-T file search
 export FZF_CTRL_T_OPTS="
-  --walker-skip .git,.next,.terraform,node_modules,target
-  --preview 'bat -n --color=always {}'
+  --preview 'batcat -n --color=always {}'
   --bind 'ctrl-/:change-preview-window(down|hidden|)'
   --header 'Find files (Ctrl + / to switch preview)'"
 # Alt-C directory search
@@ -458,6 +463,28 @@ export FZF_ALT_C_OPTS="
 export FZF_CTRL_R_OPTS="
   --color header:italic
   --header 'Search history'"
+# Use fd to generate the list for path completion
+_fzf_compgen_path() {
+  fdfind --hidden --follow \
+    --exclude ".git" \
+    --exclude ".git-crypt" \
+    --exclude ".next" \
+    --exclude ".terraform" \
+    --exclude "node_modules" \
+    --exclude "target" \
+    . "$1"
+}
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fdfind --type d --hidden --follow \
+    --exclude ".git" \
+    --exclude ".git-crypt" \
+    --exclude ".next" \
+    --exclude ".terraform" \
+    --exclude "node_modules" \
+    --exclude "target" \
+    . "$1"
+}
 #------------------------------------------------------------------------------
 # Path Configuration
 #------------------------------------------------------------------------------

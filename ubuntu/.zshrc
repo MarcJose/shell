@@ -21,6 +21,8 @@ umask 022
 #------------------------------------------------------------------------------
 # Enable syntax highlighting for commands (must be sourced before other plugins)
 . /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Enable searching by substrings
+. /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 # Configure fuzzy finder (fzf) for enhanced file/history search
 . /usr/share/doc/fzf/examples/key-bindings.zsh
 . /usr/share/doc/fzf/examples/completion.zsh
@@ -30,6 +32,10 @@ umask 022
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Enable async mode for better performance
 ZSH_AUTOSUGGEST_USE_ASYN=true
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+# Show suggestions as you type
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
+ZSH_AUTOSUGGEST_HISTORY_IGNORE='cd *'
 
 
 #------------------------------------------------------------------------------
@@ -85,6 +91,12 @@ zstyle ':completion::complete:*' gain-privileges 1
 zstyle ':completion:*' rehash true
 # Enable faster completion for exact matches
 zstyle ':completion:*' accept-exact '*(N)'
+# Styling
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
 # Initialize completion system
 COMPLETIONCACHE="${XDG_CACHE_HOME}/zsh/zcompdump-${ZSH_VERSION}"
 if [ ! -d "${COMPLETIONCACHE}" ]; then
@@ -166,6 +178,14 @@ key[Control-Right]="${terminfo[kRIT5]}"
 [ -n "${key[Shift-Tab]}"     ] && bindkey -- "${key[Shift-Tab]}"     reverse-menu-complete
 [ -n "${key[Control-Left]}"  ] && bindkey -- "${key[Control-Left]}"  backward-word
 [ -n "${key[Control-Right]}" ] && bindkey -- "${key[Control-Right]}" forward-word
+# FZF and completion key bindings
+bindkey '^R' fzf-history-widget                 # Ctrl+R for history search
+bindkey '^T' fzf-file-widget                    # Ctrl+T for file search
+bindkey '^[c' fzf-cd-widget                     # Alt+C for directory search
+bindkey '^I' expand-or-complete                 # Tab for completion menu
+bindkey '^ ' autosuggest-accept                 # Ctrl+Space to accept suggestion
+bindkey '^[[A' history-substring-search-up      # Up arrow
+bindkey '^[[B' history-substring-search-down    # Down arrow
 # Set up terminal application mode
 if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
   autoload -Uz add-zle-hook-widget
@@ -256,7 +276,8 @@ __vcs_info_wrapper() {
 #------------------------------------------------------------------------------
 # Build prompt with status, date, username, VCS info, and execution time
 __build_prompt() {
-  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__aws_profile_wrapper)$(__terraform_workspace_wrapper)$(__vcs_info_wrapper): "
+  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__aws_profile_wrapper)$(__terraform_workspace_wrapper)$(__vcs_info_wrapper)
+%F{green}→%f "
   RPROMPT='%B%F{cyan}%2d%f%b'
 }
 # Update prompt before each command

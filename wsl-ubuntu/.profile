@@ -441,15 +441,20 @@ export LD_LIBRARY_PATH='${IBM_DB_HOME}/lib:${LD_LIBRARY_PATH}'
 # FZF (Fuzzy Finder) Configuration
 #------------------------------------------------------------------------------
 # Configure the fuzzy finder tool behavior
-# Enable ANSI color support
-export FZF_DEFAULT_OPTS="--ansi"
+export FZF_COMPLETION_OPTS='--border --info=inline --ansi'
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --info=inline \
+  --preview-window=:hidden \
+  --preview '([[ -f {} ]] && ( --style=numbers --color=always {} || cat {})) \
+    || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200' \
+  --bind '?:toggle-preview'"
 # Define default command to use for file search
-export FZF_DEFAULT_COMMAND="find . -type f -not -path '*/\.git/*' -not -path '*/\.terraform/*'"
+export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --exclude .git --exclude .git-crypt --exclude .next --exclude .terraform --exclude node_modules --exclude target'
+# Enable fzf completion for ** patterns
+export FZF_COMPLETION_TRIGGER='**'
 # Configure specific commands for different operations
 # Ctrl-T file search
 export FZF_CTRL_T_OPTS="
-  --walker-skip .git,.next,.terraform,node_modules,target
-  --preview 'bat -n --color=always {}'
+  --preview 'batcat -n --color=always {}'
   --bind 'ctrl-/:change-preview-window(down|hidden|)'
   --header 'Find files (Ctrl + / to switch preview)'"
 # Alt-C directory search
@@ -460,6 +465,28 @@ export FZF_ALT_C_OPTS="
 export FZF_CTRL_R_OPTS="
   --color header:italic
   --header 'Search history'"
+# Use fd to generate the list for path completion
+_fzf_compgen_path() {
+  fdfind --hidden --follow \
+    --exclude ".git" \
+    --exclude ".git-crypt" \
+    --exclude ".next" \
+    --exclude ".terraform" \
+    --exclude "node_modules" \
+    --exclude "target" \
+    . "$1"
+}
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fdfind --type d --hidden --follow \
+    --exclude ".git" \
+    --exclude ".git-crypt" \
+    --exclude ".next" \
+    --exclude ".terraform" \
+    --exclude "node_modules" \
+    --exclude "target" \
+    . "$1"
+}
 #------------------------------------------------------------------------------
 # Path Configuration
 #------------------------------------------------------------------------------
@@ -547,7 +574,7 @@ export _fzf_comprun() {
         # SSH host preview
         ssh)          fzf --preview 'dig {}' "$@";;
         # Default file preview
-        *)            fzf --preview 'bat -n -f -r :500 {} ' "$@";;
+        *)            fzf --preview 'batcat -n -f -r :500 {} ' "$@";;
     esac
 }
 # Interactive directory navigation with FZF
@@ -17129,13 +17156,13 @@ alias fsearch='apt-cache search . | sort | fzf --multi --preview "apt-cache show
 alias finstall='apt-cache search . | sort | fzf --multi --preview "apt-cache show {}" | cut -d " " -f1 | xargs -ro sudo apt install'
 alias fremove='dpkg -l | sed 1,5d | awk '\''{print $2}'\'' | fzf --multi --preview "apt-cache show {}" | xargs -ro sudo apt remove'
 alias funinstall='dpkg -l | sed 1,5d | awk '\''{print $2}'\'' | fzf --multi --preview "apt-cache show {}" | xargs -ro sudo apt purge'
-# Bat/Cat integration
-if command -v bat >/dev/null 2>&1; then
-    # If bat is available, use it
-    # Find and view with bat
-    alias bf='bat $(fzf)'
-    # Browse with bat preview
-    alias baf='fzf --preview "bat --style=numbers --color=always {}"'
+# batcat/cat integration
+if command -v batcat >/dev/null 2>&1; then
+    # If batcat is available, use it
+    # Find and view with batcat
+    alias bf='batcat $(fzf)'
+    # Browse with batcat preview
+    alias baf='fzf --preview "batcat --style=numbers --color=always {}"'
 else
     # Fallback to cat
     # Find and view with cat

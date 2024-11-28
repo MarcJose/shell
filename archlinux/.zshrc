@@ -7,6 +7,7 @@
 # Set umask for better security (files: 644, dirs: 755)
 umask 022
 
+
 #------------------------------------------------------------------------------
 # Basic Configuration
 #------------------------------------------------------------------------------
@@ -21,6 +22,8 @@ umask 022
 #------------------------------------------------------------------------------
 # Enable syntax highlighting for commands (must be sourced before other plugins)
 . /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Enable searching by substrings
+. /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 # Configure fuzzy finder (fzf) for enhanced file/history search
 . /usr/share/fzf/key-bindings.zsh
 . /usr/share/fzf/completion.zsh
@@ -31,6 +34,11 @@ umask 022
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Enable async mode for better performance
 ZSH_AUTOSUGGEST_USE_ASYN=true
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+# Show suggestions as you type
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+# Bind ctrl+space to accept suggestion
+bindkey '^ ' autosuggest-accept
 
 
 #------------------------------------------------------------------------------
@@ -96,15 +104,36 @@ autoload -U +X bashcompinit && bashcompinit
 # Initialize the completion system
 autoload -Uz compinit
 compinit -d "${COMPLETIONCACHE}"
-
+# Real-time command completion
+zle -N fzf-completion
+bindkey '^I' fzf-completion
+ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=(fzf-completion)
 
 #------------------------------------------------------------------------------
 # Command Line Navigation
 #------------------------------------------------------------------------------
+# Custom widget for real-time command suggestions
+fzf-history-widget() {
+  local selected num
+  setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
+  selected=( $(fc -rl 1 | perl -ne 'print if !$seen{($_ =~ s/^\s*[0-9]+\s+//r)}++' |
+    FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=ctrl-r:toggle-sort,ctrl-z:ignore --query=${(qqq)LBUFFER} +m" $(__fzfcmd)) )
+  local ret=$?
+  if [ -n "$selected" ]; then
+    num=$selected[1]
+    if [ -n "$num" ]; then
+      zle vi-fetch-history -n $num
+    fi
+  fi
+  zle reset-prompt
+  return $ret
+}
 # Enable history search functionality
 autoload -Uz history-beginning-search-backward history-beginning-search-forward
-zle -N history-beginning-search-backward
-zle -N history-beginning-search-forward
+#zle     -N   history-beginning-search-backward
+#zle     -N   history-beginning-search-forward
+zle     -N   fzf-history-widget
+bindkey '^R' fzf-history-widget
 
 
 #------------------------------------------------------------------------------
@@ -207,6 +236,18 @@ setopt PUSHD_MINUS
 
 
 #------------------------------------------------------------------------------
+# History search
+#------------------------------------------------------------------------------
+# FZF History key bindings
+bindkey '^R' fzf-history-widget # Ctrl+R for history search
+bindkey '^T' fzf-file-widget    # Ctrl+T for file search
+bindkey '^[c' fzf-cd-widget     # Alt+C for directory search
+# Add Up/Down arrow keys for history substring search
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+
+#------------------------------------------------------------------------------
 # Version Control System Integration
 #------------------------------------------------------------------------------
 # Enable VCS information in prompt
@@ -257,7 +298,8 @@ __vcs_info_wrapper() {
 #------------------------------------------------------------------------------
 # Build prompt with status, date, username, VCS info, and execution time
 __build_prompt() {
-  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__aws_profile_wrapper)$(__terraform_workspace_wrapper)$(__vcs_info_wrapper): "
+  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__aws_profile_wrapper)$(__terraform_workspace_wrapper)$(__vcs_info_wrapper)
+%F{green}→%f "
   RPROMPT='%B%F{cyan}%2d%f%b'
 }
 # Update prompt before each command
