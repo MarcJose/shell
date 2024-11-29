@@ -78,6 +78,8 @@ setopt INTERACTIVE_COMMENTS
 setopt HASH_LIST_ALL
 # Report status of background jobs immediately
 setopt NOTIFY
+# Disable flow control
+setopt noflowcontrol
 
 
 #------------------------------------------------------------------------------
@@ -87,7 +89,7 @@ setopt NOTIFY
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "${XDG_CACHE_HOME}/zsh/zcompcache"
 # Enable menu-driven completion
-zstyle ':completion:*' menu select
+zstyle ':completion:*' menu select=2
 # Allow completion of sudo commands
 zstyle ':completion::complete:*' gain-privileges 1
 # Automatically rehash PATH to find new executables
@@ -103,9 +105,11 @@ zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:kill:*'   force-list always
 zstyle ':completion:*:*:killall:*' menu yes select
 zstyle ':completion:*:killall:*'   force-list always
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
+zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
 zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' completer _expand _complete _ignored _approximate
 # Add autocomplete window
 zstyle ':autocomplete:*' default-context history-incremental-search-backward
 # Initialize completion system
@@ -116,7 +120,7 @@ fi
 # Load bash compatibility layer
 autoload -U +X bashcompinit && bashcompinit
 # Initialize the completion system
-zmodload zsh/complist 
+zmodload zsh/complist
 autoload -Uz compinit promptinit
 compinit -d "${COMPLETIONCACHE}"
 promptinit -d "${COMPLETIONCACHE}"

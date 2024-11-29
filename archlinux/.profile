@@ -445,14 +445,14 @@ export FZF_COMPLETION_PATH_OPTS='--walker file,dir,follow,hidden'
 # Options for directory completion (e.g. cd **<TAB>)
 export FZF_COMPLETION_DIR_OPTS='--walker dir,follow,hidden'
 # Define default command to use for file search
-export FZF_DEFAULT_COMMAND="fd 
-    --type f 
-    --hidden 
-    --exclude .git 
-    --exclude .git-crypt 
-    --exclude .next 
-    --exclude .terraform 
-    --exclude node_modules 
+export FZF_DEFAULT_COMMAND="fd
+    --type f
+    --hidden
+    --exclude .git
+    --exclude .git-crypt
+    --exclude .next
+    --exclude .terraform
+    --exclude node_modules
     --exclude target"
 # Enable fzf completion for ** patterns
 export FZF_COMPLETION_TRIGGER='**'
