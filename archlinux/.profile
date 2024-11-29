@@ -440,34 +440,43 @@ export LD_LIBRARY_PATH='${IBM_DB_HOME}/lib:${LD_LIBRARY_PATH}'
 #------------------------------------------------------------------------------
 # Configure the fuzzy finder tool behavior
 export FZF_COMPLETION_OPTS='--border --info=inline --ansi'
-export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --info=inline \
-  --preview-window=:hidden \
-  --preview '([[ -f {} ]] && ( --style=numbers --color=always {} || cat {})) \
-    || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200' \
-  --bind '?:toggle-preview'"
+# Options for path completion (e.g. vim **<TAB>)
+export FZF_COMPLETION_PATH_OPTS='--walker file,dir,follow,hidden'
+# Options for directory completion (e.g. cd **<TAB>)
+export FZF_COMPLETION_DIR_OPTS='--walker dir,follow,hidden'
 # Define default command to use for file search
-export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --exclude .git --exclude .git-crypt --exclude .next --exclude .terraform --exclude node_modules --exclude target'
+export FZF_DEFAULT_COMMAND="fd 
+    --type f 
+    --hidden 
+    --exclude .git 
+    --exclude .git-crypt 
+    --exclude .next 
+    --exclude .terraform 
+    --exclude node_modules 
+    --exclude target"
 # Enable fzf completion for ** patterns
 export FZF_COMPLETION_TRIGGER='**'
 # Configure specific commands for different operations
 # Ctrl-T file search
 export FZF_CTRL_T_OPTS="
+  --walker file,follow,hidden
   --walker-skip .git,.git-crypt,.next,.terraform,node_modules,target
-  --preview 'batcat -n --color=always {}'
-  --bind 'ctrl-/:change-preview-window(down|hidden|)'
+  --preview 'bat -n --color=always {}'
+  --bind 'ctrl-/:change-preview-window(50%|hidden|)'
   --header 'Find files (Ctrl + / to switch preview)'"
 # Alt-C directory search
 export FZF_ALT_C_OPTS="
+  --walker dir,follow,hidden
   --walker-skip .git,.git-crypt,.next,.terraform,node_modules,target
   --preview 'tree -C {}'
-  --bind 'ctrl-/:change-preview-window(down|hidden|)'
+  --bind 'ctrl-/:change-preview-window(50%|hidden|)'
   --header 'Find subdirectories (Ctrl + / to switch preview)'"
 export FZF_CTRL_R_OPTS="
   --color header:italic
   --header 'Search history'"
 # Use fd to generate the list for path completion
 _fzf_compgen_path() {
-  fdfind --hidden --follow \
+  fd --hidden --follow \
     --exclude ".git" \
     --exclude ".git-crypt" \
     --exclude ".next" \
@@ -478,7 +487,7 @@ _fzf_compgen_path() {
 }
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
-  fdfind --type d --hidden --follow \
+  fd --type d --hidden --follow \
     --exclude ".git" \
     --exclude ".git-crypt" \
     --exclude ".next" \
@@ -17190,8 +17199,6 @@ alias fhistory='history | fzf | cut -c8-'
 #------------------------------------------------------------------------------
 # Miscellaneous Aliases
 #------------------------------------------------------------------------------
-# Help command
-alias help='run-help'
 # Rerun last command with sudo
 alias please="sudo !!"
 # Retrieve random 64 character string via /dev/urandom

@@ -13,8 +13,6 @@ umask 022
 #------------------------------------------------------------------------------
 # Source profile file for environment variables and basic setup
 . ~/.profile
-# Enable command-not-found suggestion functionality
-. /usr/share/doc/pkgfile/command-not-found.zsh
 
 
 #------------------------------------------------------------------------------
@@ -22,6 +20,8 @@ umask 022
 #------------------------------------------------------------------------------
 # Enable syntax highlighting for commands (must be sourced before other plugins)
 . /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Enable command-not-found suggestion functionality
+. /usr/share/doc/pkgfile/command-not-found.zsh
 # Enable searching by substrings
 . /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 # Configure fuzzy finder (fzf) for enhanced file/history search
@@ -30,6 +30,7 @@ umask 022
 . <(fzf --zsh)
 # Enable fish-like autosuggestions based on command history
 . /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+#skip_global_compinit=1
 # Use both history and completion for suggestions
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Enable async mode for better performance
@@ -37,8 +38,7 @@ ZSH_AUTOSUGGEST_USE_ASYN=true
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 # Show suggestions as you type
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
-# Bind ctrl+space to accept suggestion
-bindkey '^ ' autosuggest-accept
+ZSH_AUTOSUGGEST_HISTORY_IGNORE='cd *'
 
 
 #------------------------------------------------------------------------------
@@ -95,8 +95,14 @@ zstyle ':completion:*' rehash true
 # Enable faster completion for exact matches
 zstyle ':completion:*' accept-exact '*(N)'
 # Styling
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
+zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
+zstyle ':completion:*:pacman:*' force-list always
+zstyle ':completion:*:*:pacman:*' menu yes select
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:kill:*'   force-list always
+zstyle ':completion:*:*:killall:*' menu yes select
+zstyle ':completion:*:killall:*'   force-list always
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
 zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
 zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
@@ -110,12 +116,14 @@ fi
 # Load bash compatibility layer
 autoload -U +X bashcompinit && bashcompinit
 # Initialize the completion system
-autoload -Uz compinit
+zmodload zsh/complist 
+autoload -Uz compinit promptinit
 compinit -d "${COMPLETIONCACHE}"
+promptinit -d "${COMPLETIONCACHE}"
 # Real-time command completion
 zle -N fzf-completion
-bindkey '^I' fzf-completion
 ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=(fzf-completion)
+
 
 #------------------------------------------------------------------------------
 # Command Line Navigation
@@ -138,10 +146,7 @@ fzf-history-widget() {
 }
 # Enable history search functionality
 autoload -Uz history-beginning-search-backward history-beginning-search-forward
-#zle     -N   history-beginning-search-backward
-#zle     -N   history-beginning-search-forward
 zle     -N   fzf-history-widget
-bindkey '^R' fzf-history-widget
 
 
 #------------------------------------------------------------------------------
@@ -149,6 +154,8 @@ bindkey '^R' fzf-history-widget
 #------------------------------------------------------------------------------
 # Load extended help system for various commands
 autoload -Uz run-help
+(( ${+aliases[run-help]} )) && unalias run-help
+alias help=run-help
 autoload -Uz run-help-git
 autoload -Uz run-help-ip
 autoload -Uz run-help-openssl
@@ -204,6 +211,15 @@ key[Control-Right]="${terminfo[kRIT5]}"
 [ -n "${key[Shift-Tab]}"     ] && bindkey -- "${key[Shift-Tab]}"     reverse-menu-complete
 [ -n "${key[Control-Left]}"  ] && bindkey -- "${key[Control-Left]}"  backward-word
 [ -n "${key[Control-Right]}" ] && bindkey -- "${key[Control-Right]}" forward-word
+# FZF and completion key bindings
+bindkey '^R'   fzf-history-widget               # Ctrl+R for history search
+bindkey '^T'   fzf-file-widget                  # Ctrl+T for file search
+bindkey '^[c'  fzf-cd-widget                    # Alt+C for directory search
+bindkey '^I'   expand-or-complete               # Tab for completion menu
+bindkey '^ '   autosuggest-accept               # Ctrl+Space to accept suggestion
+bindkey '^[[A' history-substring-search-up      # Up arrow
+bindkey '^[[B' history-substring-search-down    # Down arrow
+#bindkey '^I'   fzf-completion                   # Real-time command completion
 # Set up terminal application mode
 if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
   autoload -Uz add-zle-hook-widget
@@ -223,17 +239,14 @@ fi
 #------------------------------------------------------------------------------
 # Initialize directory stack
 autoload -Uz add-zsh-hook
-DIRSTACKFOLDER="${XDG_CACHE_HOME}/zsh"
-[ ! -d "${DIRSTACKFOLDER}" ] && mkdir -p "${DIRSTACKFOLDER}"
-DIRSTACKFILE="${DIRSTACKFOLDER}/dirs"
-# Load previous directory stack if it exists
-if [ -f "$DIRSTACKFILE" ] && (( ${#dirstack} == 0 )); then
-  dirstack=("${(@f)"$(< "$DIRSTACKFILE")"}")
-  [ -d "${dirstack[1]}" ] && cd -- "${dirstack[1]}"
+DIRSTACKFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/dirs"
+if [[ -f "${DIRSTACKFILE}" ]] && (( ${#dirstack} == 0 )); then
+	dirstack=("${(@f)"$(< "${DIRSTACKFILE}")"}")
+	[[ -d "${dirstack[1]}" ]] && cd -- "${dirstack[1]}"
 fi
 # Save directory stack on directory change
 chpwd_dirstack() {
-  print -l -- "$PWD" "${(u)dirstack[@]}" > "$DIRSTACKFILE"
+	print -l -- "$PWD" "${(u)dirstack[@]}" > "${DIRSTACKFILE}"
 }
 add-zsh-hook -Uz chpwd chpwd_dirstack
 # Configure directory stack behavior
@@ -241,18 +254,6 @@ DIRSTACKSIZE='100'
 setopt AUTO_PUSHD PUSHD_SILENT PUSHD_TO_HOME
 setopt PUSHD_IGNORE_DUPS
 setopt PUSHD_MINUS
-
-
-#------------------------------------------------------------------------------
-# History search
-#------------------------------------------------------------------------------
-# FZF History key bindings
-bindkey '^R' fzf-history-widget # Ctrl+R for history search
-bindkey '^T' fzf-file-widget    # Ctrl+T for file search
-bindkey '^[c' fzf-cd-widget     # Alt+C for directory search
-# Add Up/Down arrow keys for history substring search
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
 
 
 #------------------------------------------------------------------------------
@@ -321,6 +322,8 @@ precmd() {
 #------------------------------------------------------------------------------
 # Enable 24-bit color support if available
 [[ "${COLORTERM}" == (24bit|truecolor) || "${terminfo[colors]}" -eq '16777216' ]] || zmodload zsh/nearcolor
+autoload -U colors zsh/terminfo
+colors
 
 
 #------------------------------------------------------------------------------
