@@ -43,6 +43,27 @@ function Install-WingetPackages {
     }
 }
 
+function Install-Scoop {
+    Write-Status "Checking Scoop installation..."
+
+    if (Get-Command scoop -ErrorAction SilentlyContinue) {
+        Write-Status "Scoop is already installed" -Color "Green"
+        return
+    }
+
+    try {
+        Write-Status "Installing Scoop..."
+
+        # Install Scoop
+        Invoke-RestMethod get.scoop.sh | Invoke-Expression
+
+        Write-Status "Scoop installed successfully" -Color "Green"
+    }
+    catch {
+        Write-Status "Failed to install Scoop: $_" -Color "Red"
+    }
+}
+
 function Install-ScoopPackages {
     try {
         Write-Status "Installing Scoop packages..." -Color "Yellow"
@@ -90,13 +111,13 @@ function Install-ScoopPackages {
 
         # Office
         scoop install extras/libreoffice                 # LibreOffice
-        scoop install extras/onlyoffice-desktopeditors   # OnlyOffice
+        #scoop install extras/onlyoffice-desktopeditors   # OnlyOffice
         scoop install extras/notepadplusplus             # Notepad++
         reg import "$env:USERPROFILE\scoop\apps\notepadplusplus\current\install-context.reg"
         scoop install extras/obsidian                    # Obsidian
-        scoop install extras/krita                       # Krita
+        #scoop install extras/krita                       # Krita
         scoop install extras/kate                        # Kate
-        scoop install extras/okular                      # Okular
+        #scoop install extras/okular                      # Okular
 
         # Media
         scoop install extras/vlc                         # VLC
@@ -111,22 +132,22 @@ function Install-ScoopPackages {
         scoop install extras/vscode                      # Visual Studio Code
         reg import "$env:USERPROFILE\scoop\apps\vscode\current\install-context.reg"
         reg import "$env:USERPROFILE\scoop\apps\vscode\current\install-associations.reg"
-        scoop install extras/jetbrains-toolbox           # Jetbrains Toolbox
+        #scoop install extras/jetbrains-toolbox           # Jetbrains Toolbox
 
         # Communication
-        scoop install extras/mattermost                  # Mattermost
-        scoop install extras/slack                       # Slack
-        scoop install extras/element                     # Element
-        scoop install extras/rocketchat-client           # Rocket Chat
-        scoop install extras/signal                      # Signal
-        scoop install extras/telegram                    # Telegram
+        #scoop install extras/mattermost                  # Mattermost
+        #scoop install extras/slack                       # Slack
+        #scoop install extras/element                     # Element
+        #scoop install extras/rocketchat-client           # Rocket Chat
+        #scoop install extras/signal                      # Signal
+        #scoop install extras/telegram                    # Telegram
         scoop install extras/zoom                        # Zoom
 
         # Windows
         scoop install extras/windows-terminal
         reg import "$env:USERPROFILE\scoop\apps\windows-terminal\current\install-context.reg"
-        scoop install extras/microsoft-teams
-        scoop install nonportable/office-365-apps-np
+        #scoop install extras/microsoft-teams
+        #scoop install nonportable/office-365-apps-np
         scoop install extras/powertoys
         Invoke-Expression -Command "$env:USERPROFILE\scoop\apps\powertoys\current\install-context.ps1"
 
@@ -143,17 +164,17 @@ function Install-ScoopPackages {
 
         # Java
         scoop install java/openjdk
-        scoop install java/oraclejdk
+        #scoop install java/oraclejdk
 
         # Security
-        scoop install nonportable/protonvpn-np
-        scoop install extras/wireshark
-        & "$env:USERPROFILE\scoop\apps\wireshark\current\npcap-installer.exe"
-        & "$env:USERPROFILE\scoop\apps\wireshark\current\USBPcapSetup-installer.exe"
-        scoop install main/nmap
+        #scoop install nonportable/protonvpn-np
+        #scoop install extras/wireshark
+        #& "$env:USERPROFILE\scoop\apps\wireshark\current\npcap-installer.exe"
+        #& "$env:USERPROFILE\scoop\apps\wireshark\current\USBPcapSetup-installer.exe"
+        #scoop install main/nmap
 
         # Virtualization
-        scoop install nonportable/virtualbox-with-extension-pack-np
+        #scoop install nonportable/virtualbox-with-extension-pack-np
 
         # Update all installed packages
         Write-Status "Updating all packages..."
@@ -302,6 +323,7 @@ function Start-CustomSetup {
 
         # Install Scoop packages
         if (-not $SkipScoop) {
+            Install-Scoop
             Install-ScoopPackages
         }
 

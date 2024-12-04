@@ -23,8 +23,6 @@ function Test-AdminPrivileges {
     return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-
-
 function Remove-DefaultBloat {
     $apps = @(
         "Microsoft.549981C3F5F10"
@@ -205,34 +203,6 @@ function Install-WinGet {
     }
 }
 
-function Install-Scoop {
-    Write-Status "Checking Scoop installation..."
-
-    if (Get-Command scoop -ErrorAction SilentlyContinue) {
-        Write-Status "Scoop is already installed" -Color "Green"
-        return
-    }
-
-    try {
-        Write-Status "Installing Scoop..."
-
-        # Set execution policy for current user
-        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-
-        # Install Scoop
-        Invoke-RestMethod get.scoop.sh | Invoke-Expression
-
-        # Update Scoop
-        Write-Status "Updating Scoop..."
-        scoop update
-
-        Write-Status "Scoop installed successfully" -Color "Green"
-    }
-    catch {
-        Write-Status "Failed to install Scoop: $_" -Color "Red"
-    }
-}
-
 function Install-Chocolatey {
     Write-Status "Checking Chocolatey installation..."
 
@@ -243,10 +213,6 @@ function Install-Chocolatey {
 
     try {
         Write-Status "Installing Chocolatey..."
-
-        # Set execution policy and TLS
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
 
         # Install Chocolatey
         Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
@@ -344,8 +310,6 @@ function Install-PowerShellProfile {
             } else {
                 Write-Status "Skipping WinGet and Chocolatey installation (requires admin privileges)" -Color "Yellow"
             }
-            # Scoop can be installed without admin privileges
-            Install-Scoop
         }
 
         # Get profile paths
@@ -379,6 +343,7 @@ function Install-PowerShellProfile {
                 }
             }
             Copy-Item -Path $tempFile -Destination $paths.PS7.Profile -Force
+            Unblock-File -Path $paths.PS7.Profile
 
             # Create symlink for PS5
             if (Test-Path $paths.PS5.Profile) {
@@ -393,6 +358,9 @@ function Install-PowerShellProfile {
             Write-Status "Deploying separate profiles..."
             Copy-Item -Path $tempFile -Destination $paths.PS5.Profile -Force
             Copy-Item -Path $tempFile -Destination $paths.PS7.Profile -Force
+
+            Unblock-File -Path $paths.PS5.Profile
+            Unblock-File -Path $paths.PS7.Profile
         }
 
         # Create local profile if requested

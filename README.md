@@ -55,10 +55,12 @@ wget -O ~/.zshrc   "https://raw.githubusercontent.com/MarcJose/shell/main/wsl-ub
 
 ```powershell
 # As Administrator
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+Set-ExecutionPolicy Unrestricted -Force
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
 iex "& { $(irm https://raw.githubusercontent.com/MarcJose/shell/main/windows/install.ps1) } -CreateSymLink -Force -CreateLocalProfile"
 
 # As user
+Set-ExecutionPolicy -Scope CurrentUser Bypass -Force
 iex "& { $(irm https://raw.githubusercontent.com/MarcJose/shell/main/windows/custom.ps1) } -Force"
 ```
 
