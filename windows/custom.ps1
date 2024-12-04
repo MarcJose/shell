@@ -226,8 +226,16 @@ function Install-VSCodeExtensions {
             'eamodio.gitlens',                                      # GitLens
             "github.vscode-github-actions",                         # GitHub Actions
             "GitHub.vscode-pull-request-github",                    # GitHub Pull Requests
-
+            
+            'ms-vscode.azure-account',                              # Azure Utilities
+            'ms-vscode.azure-repos',
+            'msazurermtools.azurerm-vscode-tools',
+            'ms-azuretools.vscode-azureterraform',
+            'ms-azure-devops.azure-pipelines',
+            'ms-kubernetes-tools.vscode-aks-tools',
+            'ms-codespaces-tools.ado-codespaces-auth',
             'ms-vscode.powershell',                                 # PowerShell
+            
             'ms-vscode.hexeditor',                                  # Hex Editor
             'redhat.vscode-yaml',                                   # YAML
             "mechatroner.rainbow-csv",                              # CSV
