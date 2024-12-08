@@ -294,6 +294,7 @@ __terraform_workspace_wrapper() {
   fi
 }
 
+
 #------------------------------------------------------------------------------
 # VCS Information Wrapper
 #------------------------------------------------------------------------------
@@ -306,11 +307,23 @@ __vcs_info_wrapper() {
 
 
 #------------------------------------------------------------------------------
+# Python Virtualenv Information
+#------------------------------------------------------------------------------
+__virtualenv_wrapper() {
+  if [ -n "$VIRTUAL_ENV" ]; then
+    # Extract just the environment name from the full path
+    local env_name=$(basename "$VIRTUAL_ENV")
+    echo "(%F{blue}${env_name}%f)"
+  fi
+}
+
+
+#------------------------------------------------------------------------------
 # Enhanced Prompt with Command Execution Time
 #------------------------------------------------------------------------------
 # Build prompt with status, date, username, VCS info, and execution time
 __build_prompt() {
-  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__aws_profile_wrapper)$(__terraform_workspace_wrapper)$(__vcs_info_wrapper)
+  PROMPT="[%(?.%F{green}✔.%F{red}✗)%f][%F{green}%D{%Y-%m-%d} %T%f][%F{green}%n%f]$(__virtualenv_wrapper)$(__aws_profile_wrapper)$(__terraform_workspace_wrapper)$(__vcs_info_wrapper)
 %F{green}→%f "
   RPROMPT='%B%F{cyan}%2d%f%b'
 }
