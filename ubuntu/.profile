@@ -16672,6 +16672,47 @@ xray:update-sampling-rule
         aws $service $resource
     fi
 }
+# Connect to EC2 instance using SSM
+export aws_ec2_connect() {
+    # Check if AWS CLI is installed
+    if ! command -v aws &> /dev/null; then
+        echo "Error: AWS CLI is not installed"
+        return 1
+    fi
+
+    # Check if fzf is installed
+    if ! command -v fzf &> /dev/null; then
+        echo "Error: fzf is not installed"
+        return 1
+    fi
+
+    if [ -z "$AWS_PROFILE" ]; then
+        aws_profile()
+    fi
+
+    # Get all EC2 instances
+    echo "Fetching EC2 instances..."
+    selected_instance=$(aws ec2 describe-instances \
+        --query 'Reservations[*].Instances[*].[InstanceId,Tags[?Key==`Name`].Value|[0],State.Name,PrivateIpAddress]' \
+        --output text \
+        | column -t \
+        | grep -v terminated \
+        | fzf --header='Select EC2 Instance (ID | Name | State | Private IP)' \
+        | awk '{print $1}')
+
+    # Check if an instance was selected
+    if [ -z "$selected_instance" ]; then
+        echo "No instance selected"
+        return 1
+    fi
+
+    # Start SSM session
+    echo "Starting SSM session for instance: $selected_instance"
+    aws ssm start-session \
+        --target "$selected_instance" \
+        --document-name AWS-StartInteractiveCommand \
+        --parameters command="bash -l"
+}
 #------------------------------------------------------------------------------
 # Terraform Management Functions
 #------------------------------------------------------------------------------
