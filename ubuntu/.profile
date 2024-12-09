@@ -16687,7 +16687,7 @@ export aws_ec2_connect() {
     fi
 
     if [ -z "$AWS_PROFILE" ]; then
-        aws_profile()
+        aws_profile
     fi
 
     # Get all EC2 instances
