@@ -797,6 +797,83 @@ revert     │ Reverts - Reverts a previous commit"
         return 1
     fi
 }
+# Create new branches following semantical standards
+git_branch() {
+    # Check if we're inside a git repository
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "Not a git repository"
+        return 1
+    fi
+
+    # Define branch types with descriptions
+    types="feature    │ New feature development
+bugfix     │ Fix a bug in development
+hotfix     │ Emergency fix for production
+release    │ Release branch
+refactor   │ Code refactoring
+test       │ Test new features or fixes
+chore      │ Routine tasks and maintenance
+docs       │ Documentation updates
+style      │ Code style changes
+ci         │ CI/CD changes"
+
+    # Let user select the type using fzf
+    selected_type=$(echo "$types" | fzf --delimiter="│" --with-nth=1,2 | awk '{print $1}')
+
+    if [ -z "$selected_type" ]; then
+        echo "No type selected. Branch creation cancelled."
+        return 1
+    fi
+
+    # Get ticket/issue number if applicable
+    echo -n "Enter ticket number (optional, press enter to skip): "
+    read ticket
+
+    # Get branch description
+    echo -n "Enter branch description (required, use-kebab-case): "
+    read description
+
+    # Check if description is provided
+    if [ -z "$description" ]; then
+        echo "No description provided. Branch creation cancelled."
+        return 1
+    fi
+
+    # Format ticket if provided
+    ticket_text=""
+    if [ ! -z "$ticket" ]; then
+        ticket_text="$ticket-"
+    fi
+
+    # Convert description to kebab case
+    description=$(echo "$description" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+    # Construct the branch name
+    branch_name="$selected_type/$ticket_text$description"
+
+    # Show the final name and ask for confirmation
+    echo -e "\nBranch name will be:"
+    echo "$branch_name"
+    echo -n "Create branch? (y/n): "
+    read confirm
+
+    if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+        # Check if branch already exists
+        if git show-ref --verify --quiet refs/heads/"$branch_name"; then
+            echo "Branch '$branch_name' already exists!"
+            return 1
+        fi
+
+        # Create and switch to the new branch
+        git checkout -b "$branch_name"
+        if [ $? -eq 0 ]; then
+            echo "Created and switched to branch: $branch_name"
+        fi
+    else
+        echo "Branch creation cancelled."
+        return 1
+    fi
+}
 #------------------------------------------------------------------------------
 # AWS Integration Functions
 #------------------------------------------------------------------------------
