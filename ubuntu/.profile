@@ -622,7 +622,7 @@ export fssh() {
 # Git Integration Functions
 #------------------------------------------------------------------------------
 # Interactive git add with preview
-export gadd() {
+export git_add() {
     git ls-files -m -o --exclude-standard | fzf -m --preview 'git diff --color=always {} | head -500' | xargs -r git add
 }
 # Create .gitignore file using gitignore.io
@@ -637,7 +637,7 @@ export gitignore() {
     fi
 }
 # Fetch and pull all git branches
-export gitPullAll() {
+export git_pull_all() {
     if [ "$(git rev-parse --is-inside-work-tree 2> /dev/null)" = "true" ]; then
         git branch -r | \
         grep -v '\->' | \
@@ -648,6 +648,73 @@ export gitPullAll() {
 
         git fetch --all --tags --prune --prune-tags
         git pull --all
+    fi
+}
+# Switch to different git branch
+export git_switch() {
+    # Check if we're inside a git repository
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "Not a git repository"
+        return 1
+    fi
+
+    # Check for uncommitted changes
+    if ! git diff-index --quiet HEAD -- || ! git diff --quiet; then
+        echo "Uncommitted changes detected. Please choose:"
+        echo "1) Stash changes and switch branch (they will be reapplied)"
+        echo "2) Keep changes and try to switch branch (may fail if conflicts exist)"
+        echo "3) Cancel"
+        read -p "Enter choice [1-3]: " choice
+
+        case $choice in
+            1)
+                echo "Stashing changes..."
+                git stash save "Auto-stash before switching branch"
+                local stashed=true
+                ;;
+            2)
+                local keep_changes=true
+                ;;
+            *)
+                echo "Operation cancelled"
+                return 1
+                ;;
+        esac
+    fi
+
+    # List all branches and let user select using fzf
+    branch=$(git branch -a | sed 's/remotes\/origin\///;s/\* //' | sort -u | fzf)
+
+    if [ ! -z "$branch" ]; then
+        if ! git show-ref --verify --quiet refs/heads/"$branch"; then
+            if [ "$keep_changes" = true ]; then
+                git switch -c "$branch" origin/"$branch"
+            else
+                git switch -c "$branch" origin/"$branch"
+            fi
+        else
+            if [ "$keep_changes" = true ]; then
+                git switch "$branch"
+            else
+                git switch "$branch"
+            fi
+        fi
+
+        if [ "$?" -eq 0 ]; then
+            echo "Switched to branch: $branch"
+
+            # Reapply stashed changes if we stashed them
+            if [ "$stashed" = true ]; then
+                echo "Reapplying stashed changes..."
+                git stash pop
+
+                # Check if stash pop had conflicts
+                if [ "$?" -ne 0 ]; then
+                    echo "Warning: There were conflicts when reapplying your changes."
+                    echo "Your changes are still in the stash. Resolve conflicts and run 'git stash pop' manually."
+                fi
+            fi
+        fi
     fi
 }
 #------------------------------------------------------------------------------
