@@ -719,6 +719,84 @@ export git_switch() {
         fi
     fi
 }
+# Create git commit following the conventional commit standard
+# https://www.conventionalcommits.org/en/v1.0.0/#specification
+export git_commit() {
+    # Check if we're inside a git repository
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "Not a git repository"
+        return 1
+    fi
+
+    # Check if there are staged changes
+    if git diff --cached --quiet; then
+        echo "No staged changes found. Did you forget to 'git add' your files?"
+        echo "Staged changes are required for a commit."
+        return 1
+    fi
+
+    # Define conventional commit types with descriptions
+    types="feat       │ Features - A new feature
+fix        │ Bug Fixes - A bug fix
+docs       │ Documentation - Documentation only changes
+style      │ Styles - Changes that do not affect the meaning of the code
+refactor   │ Code Refactoring - A code change that neither fixes a bug nor adds a feature
+perf       │ Performance Improvements - A code change that improves performance
+test       │ Tests - Adding missing tests or correcting existing tests
+build      │ Builds - Changes that affect the build system or external dependencies
+ci         │ Continuous Integration - Changes to CI configuration files and scripts
+chore      │ Chores - Other changes that don't modify src or test files
+revert     │ Reverts - Reverts a previous commit"
+
+    # Let user select the type using fzf
+    selected_type=$(echo "$types" | fzf --delimiter="│" --with-nth=1,2 | awk '{print $1}')
+
+    if [ -z "$selected_type" ]; then
+        echo "No type selected. Commit cancelled."
+        return 1
+    fi
+
+    # Show staged changes for reference
+    echo "\nStaged changes:"
+    git diff --cached --stat
+    echo "\n"
+
+    # Ask for scope (optional)
+    echo -n "Enter scope (optional, press enter to skip): "
+    read scope
+
+    # Format scope if provided
+    scope_text=""
+    if [ ! -z "$scope" ]; then
+        scope_text="($scope)"
+    fi
+
+    # Get commit message
+    echo -n "Enter commit message: "
+    read message
+
+    # Check if message is provided
+    if [ -z "$message" ]; then
+        echo "No commit message provided. Commit cancelled."
+        return 1
+    fi
+
+    # Construct the final commit message
+    final_message="$selected_type$scope_text: $message"
+
+    # Show the final message and ask for confirmation
+    echo -e "\nFinal commit message:"
+    echo "$final_message"
+    echo -n "Proceed with commit? (y/n): "
+    read confirm
+
+    if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+        git commit -m "$final_message"
+    else
+        echo "Commit cancelled."
+        return 1
+    fi
+}
 #------------------------------------------------------------------------------
 # AWS Integration Functions
 #------------------------------------------------------------------------------
