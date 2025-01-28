@@ -376,6 +376,7 @@ alias cd='z'
 # Display system information on shell startup
 __welcome() {
   MSG+="Systeminformation:\n"
+  MSG+=" OS:           ${OS}\n"
   MSG+=" Kernel:       ${KERNEL}\n"
   MSG+=" CPU:          ${CPU}\n"
   MSG+=" GPU:          ${GPU}\n"
@@ -383,7 +384,7 @@ __welcome() {
   MSG+=" IP:           ${IP}\n"
   MSG+=" MAC:          ${MAC}"
 
-  print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/apt.cow -W 500 -n
+  print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/default.cow -W 500 -n
 }
 
 # Run updater once after boot

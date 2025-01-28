@@ -391,6 +391,8 @@ fi
 # System Information Collection
 #------------------------------------------------------------------------------
 # Gather various system details for environment setup and monitoring
+# Get operating system
+export OS="$(grep 'PRETTY_NAME' /etc/os-release | cut -d = -f 2 | tr -d '"' | tac | tr '\n' ' ')"
 # Current kernel version
 export KERNEL="$(uname --kernel-release)"
 # CPU information: model name from /proc/cpuinfo
@@ -429,6 +431,17 @@ export SUDO_EDITOR='nano'
 export VISUAL='nano'
 # Disable WSL installation prompts
 export DONT_PROMPT_WSL_INSTALL='yes'
+# Get current shell
+export CURRENT_SHELL="$(ps -ocomm= -q $$)"
+# Disables OpenGL hardware acceleration (used by LibreOffice)
+export SAL_DISABLEGL=1
+# Disables OpenCL acceleration (used by LibreOffice)
+export SAL_DISABLE_OPENCL=1
+# With XFree86, disables use of DGA mouse if set
+export SDL_VIDEO_X11_DGAMOUSE=0
+# SSH agent socket
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
+export SSH_AUTH_ENV="${XDG_RUNTIME_DIR}/ssh-agent.env"
 #------------------------------------------------------------------------------
 # Database and Development Settings
 #------------------------------------------------------------------------------
@@ -549,9 +562,11 @@ fi
 if [ -s "${NVM_DIR}/nvm.sh" ]; then
     . "${NVM_DIR}/nvm.sh" > /dev/null
 fi
+[ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh"
+[ -s "${NVM_DIR}/bash_completion" ] && \. "${NVM_DIR}/bash_completion"
 # Load Deno if available
-if [ -f "${HONE}/deno/env" ]; then
-    . "${HONE}/deno/env" > /dev/null
+if [ -f "${HOME}/deno/env" ]; then
+    . "${HOME}/deno/env" > /dev/null
 fi
 #------------------------------------------------------------------------------
 # Output Formatting Functions
@@ -17168,7 +17183,53 @@ update_dotfiles() {
     rm -rf "$TEMP_DIR"
     touch "$BOOT_FLAG"
 }
+# Update nvm, node and npm to latest lts and latest current version
+update_node() {
+  echo "Updating nvm..."
+  # Get the latest nvm version and install it
+  curl -sS -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash > /dev/null
 
+  # Set NVM_DIR only if not already set
+  export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+  [ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh" > /dev/null
+
+  # Install latest LTS if not already installed
+  echo "Installing latest LTS version..."
+  nvm install --lts  > /dev/null
+  nvm install-latest-npm  > /dev/null
+  latest_lts=$(nvm current)
+
+  # Install latest stable version
+  echo "Installing latest stable version..."
+  nvm install node  > /dev/null
+  nvm install-latest-npm
+  latest_stable=$(nvm current)
+
+  # Set default alias to the latest LTS version
+  echo "Setting default Node.js version to LTS: ${latest_lts}"
+  nvm alias default "${latest_lts}"  > /dev/null
+
+  # List all installed versions and remove older ones except current LTS and latest stable
+  echo "Cleaning up old versions..."
+  while IFS= read -r version; do
+    # Clean up the version string
+    cleaned_version=$(echo "${version}" | sed 's/[->, ]//g')
+    # Skip if it's the latest LTS or latest stable
+    if [ "${cleaned_version}" != "${latest_lts}" ] && [ "${cleaned_version}" != "${latest_stable}" ]; #
+    then
+      echo "Removing version ${cleaned_version}"
+      nvm uninstall "${cleaned_version}"
+    fi
+  done <<(nvm ls --no-colors --no-alias | grep "v")
+
+  # Switch back to LTS as the active version
+  nvm use --silent --lts
+
+  echo "Update complete!"
+  echo "LTS version (default): ${latest_lts}"
+  echo "Latest stable version: ${latest_stable}"
+  echo "Current Node version: $(node -v)"
+}
 
 #==============================================================================
 # Alias Definitions
@@ -17257,7 +17318,7 @@ alias .......='cd ../../../../../..'
 #------------------------------------------------------------------------------
 # Package Management Aliases
 #------------------------------------------------------------------------------
-# Pacman and system maintenance
+# APT and system maintenance
 # Remove unused packages
 alias autoremove='sudo apt autoremove'
 # Clean package cache
@@ -17267,8 +17328,10 @@ alias updates='sudo apt list --upgradable'
 # Download and install updates
 alias update='sudo apt update && \
               sudo apt upgrade && \
+              sudo apt -y -q dist-upgrade; \
+              sudo apt-get -y -q -f install ; \
               sudo updatedb'
-# Fetch new mirror list and update as above, clean the package cache and remove unused packages
+# Fetch updates as above, clean the package cache and remove unused packages
 alias upgrade='update && \
                aptclean && \
                autoremove'
@@ -17317,6 +17380,8 @@ alias lsc='ls -lahtr --color=auto --time=birth'
 alias lsh='ls -lah --color=auto --group-directories-first'
 # Sort by modification time
 alias lsm='ls -lahtr --color=auto --time=ctime'
+# Display files/folders sorted by their size recursively starting at the current folder
+alias lss='find . -type f -exec du -hsx {} \; | sort -rh'
 # Create backup of files/folders with rync
 alias backup='rsync -vcrlptgoDHEAXh --progress --stats'
 alias backup-dry='rsync -vcrlptgoDHEAXh --progress --stats --dry-run'

@@ -378,6 +378,7 @@ alias cd='z'
 # Display system information on shell startup
 __welcome() {
   MSG+="Systeminformation:\n"
+  MSG+=" OS:           ${OS}\n"
   MSG+=" Kernel:       ${KERNEL}\n"
   MSG+=" CPU:          ${CPU}\n"
   MSG+=" GPU:          ${GPU}\n"
