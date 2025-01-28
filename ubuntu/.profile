@@ -17184,7 +17184,7 @@ update_dotfiles() {
     touch "$BOOT_FLAG"
 }
 # Update nvm, node and npm to latest lts and latest current version
-update_node() {
+export update_node() {
   echo "Updating nvm..."
   # Get the latest nvm version and install it
   curl -sS -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash > /dev/null
