@@ -440,9 +440,7 @@ export CURRENT_SHELL="$(ps -ocomm= -q $$)"
 # With XFree86, disables use of DGA mouse if set
 #export SDL_VIDEO_X11_DGAMOUSE=0
 # SSH agent socket
-# This should be handled by a service instead..
-#export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
-#export SSH_AUTH_ENV="${XDG_RUNTIME_DIR}/ssh-agent.env"
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
 #------------------------------------------------------------------------------
 # Database and Development Settings
 #------------------------------------------------------------------------------
