@@ -1146,10 +1146,8 @@ EOF
     cat << EOF | tee ${HOME}/.config/npm/npmrc
 prefix=${XDG_DATA_HOME}/npm
 cache=${XDG_CACHE_HOME}/npm
-tmp=/run/user/1000/npm
 init-module=${XDG_CONFIG_HOME}/npm/config/npm-init.js
 logs-dir=${XDG_STATE_HOME}/npm/logs
-store-dir=${XDG_DATA_HOME}/pnpm-store
 
 EOF
   fi
