@@ -527,6 +527,10 @@ if [ -d "${BUN_INSTALL}" ]; then
     # Bun runtime
     export PATH="${BUN_INSTALL}:${PATH}"
 fi
+if [ -d "${HOME}/.local/share/npm/bin" ]; then
+    # Global npm packages
+    PATH="${HOME}/.local/share/npm/bin:${PATH}"
+fi
 # Add development tool paths
 if [ -d "${XDG_DATA_HOME}/JetBrains/Toolbox/scripts" ]; then
     # JetBrains tools
