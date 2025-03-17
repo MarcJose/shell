@@ -517,25 +517,25 @@ umask 027
 # Add user-specific binary directories to PATH
 if [ -d "${HOME}/bin" ]; then
     # Personal binaries
-    PATH="${HOME}/bin:${PATH}"
+    export PATH="${HOME}/bin:${PATH}"
 fi
 if [ -d "${HOME}/.local/bin" ]; then
     # Local user binaries
-    PATH="${HOME}/.local/bin:${PATH}"
+    export PATH="${HOME}/.local/bin:${PATH}"
 fi
 # Add language-specific paths
 if [ -d "${BUN_INSTALL}" ]; then
     # Bun runtime
-    PATH="${BUN_INSTALL}:${PATH}"
+    export PATH="${BUN_INSTALL}:${PATH}"
 fi
 if [ -d "${HOME}/.local/share/npm/bin" ]; then
     # Global npm packages
-    PATH="${HOME}/.local/share/npm/bin:${PATH}"
+    export PATH="${HOME}/.local/share/npm/bin:${PATH}"
 fi
 # Add development tool paths
 if [ -d "${XDG_DATA_HOME}/JetBrains/Toolbox/scripts" ]; then
     # JetBrains tools
-    PATH="${XDG_DATA_HOME}/JetBrains/Toolbox/scripts:${PATH}"
+    export PATH="${XDG_DATA_HOME}/JetBrains/Toolbox/scripts:${PATH}"
 fi
 
 
@@ -673,7 +673,7 @@ export git_pull_all() {
     fi
 }
 # Switch to different git branch
-export git_switch() {
+export git_switch() {export
     # Check if we're inside a git repository
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
         echo "Not a git repository"
