@@ -201,7 +201,7 @@ install_packages() {
   # Install additional packages
   sudo apt-get update -y -q
   sudo apt-get install -y \
-    bat bc bind9-dnsutils b\
+    bat bc bind9-dnsutils \
     clang colordiff command-not-found cowsay cron \
     debsecan debsums default-jdk \
     fd-find fzf \
@@ -210,7 +210,7 @@ install_packages() {
     iftop imagemagick inetutils-telnet iotop ibm-iaccess \
     jc jq \
     kubeadm kubectl kubectx \
-    ldap-utils libassuan-dev libclang-dev libgcrypt20-dev libgpg-error-dev libksba-dev libldap-dev libnpth0-dev libpam-tpmdir libpth-dev llvm logwatch linux-tools-generic \
+    ldap-utils libassuan-dev libclang-dev libgcrypt20-dev libgpg-error-dev libksba-dev libldap-dev libnpth0-dev libpam-tmpdir libpth-dev llvm logwatch linux-tools-generic \
     macchanger mariadb-server maven \
     nano needrestart net-tools nginx nmap ntp \
     odbcinst openssl \
@@ -248,7 +248,7 @@ install_packages() {
 # Returns: None
 #------------------------------------------------------------------------------
 enable_system_services() {
-  sudo systemctl enable {cron,mariadb,nginx,php8.3-fpm,ssh,sysstat}
+  sudo systemctl enable {cron,mariadb,nginx,php8.3-fpm,sysstat}
 }
 
 #------------------------------------------------------------------------------
@@ -281,6 +281,10 @@ appendWindowsPath = false
 # Disable network override
 [network]
 generateResolvConf=false
+
+# Default user to log in
+[user]
+default=${CURRENT_USER}
 
 EOF
 }
