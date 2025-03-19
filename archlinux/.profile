@@ -826,16 +826,17 @@ git_branch() {
     fi
 
     # Define branch types with descriptions
-    types="feature    │ New feature development
-bugfix     │ Fix a bug in development
-hotfix     │ Emergency fix for production
-release    │ Release branch
-refactor   │ Code refactoring
-test       │ Test new features or fixes
+    types="build      │ New build system features or external dependencies
 chore      │ Routine tasks and maintenance
+ci         │ CI/CD changes
 docs       │ Documentation updates
+feat       │ New feature development
+fix        │ Fix a bug in development
+perf       │ Performance Improvements
+refactor   │ Code refactoring
+revert     │ Reverting previous changes
 style      │ Code style changes
-ci         │ CI/CD changes"
+test       │ Test new features or fixes"
 
     # Let user select the type using fzf
     selected_type=$(echo "$types" | fzf --delimiter="│" --with-nth=1,2 | awk '{print $1}')
