@@ -672,6 +672,109 @@ export git_pull_all() {
         git pull --all
     fi
 }
+# Remove local branches without remote tracking branch
+export git_prune_all() {
+  # Check if we're in a git repository
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "Error: Not inside a git repository"
+    return 1
+  fi
+
+  # Fetch updates from remote to ensure we have the latest information
+  echo "Fetching latest information from remote..."
+  git fetch --all --prune --tags
+
+  # Get the current branch name
+  current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+  # Two types of branches to clean up:
+  # 1. Branches without any remote tracking branch
+  # 2. Branches whose remote tracking branch no longer exists
+
+  # Get local branches without remote tracking branches
+  local_only_branches=()
+  while read -r branch; do
+    if [[ -n "$branch" ]]; then
+      local_only_branches+=("$branch")
+    fi
+  done < <(git for-each-ref --format='%(refname:short)' refs/heads/ | grep -v "$current_branch" | while read branch; do
+    if ! git for-each-ref --format='%(upstream:short)' refs/heads/$branch | grep -q .; then
+      echo "$branch"
+    fi
+  done)
+
+  # Get branches with deleted remote tracking branches
+  remote_deleted_branches=()
+  while read -r branch; do
+    if [[ -n "$branch" ]]; then
+      remote_deleted_branches+=("$branch")
+    fi
+  done < <(git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads/ | grep '\[gone\]' | awk '{print $1}')
+
+  # Combine both types of branches
+  all_branches=( "${local_only_branches[@]}" "${remote_deleted_branches[@]}" )
+
+  # Remove duplicates (in case a branch appears in both lists)
+  all_branches=($(printf "%s\n" "${all_branches[@]}" | sort -u))
+
+  # Check if there are any branches to process
+  if [ ${#all_branches[@]} -eq 0 ]; then
+    echo "No branches found that are either local-only or have deleted remotes."
+    return 0
+  fi
+
+  echo "Found ${#all_branches[@]} branch(es) to process:"
+  echo "----------------------------------------"
+
+  # Loop through each branch and ask for confirmation before deleting
+  for branch in "${all_branches[@]}"; do
+    # Skip the current branch (although we already filtered it out above)
+    if [[ "$branch" == "$current_branch" ]]; then
+      echo "Branch: $branch (current branch)"
+      echo "Skipping current branch. Please checkout another branch to delete this one."
+      echo "----------------------------------------"
+      continue
+    fi
+
+    # Check if branch is in the remote-deleted list
+    if [[ " ${remote_deleted_branches[*]} " == *" $branch "* ]]; then
+      branch_type="remote counterpart was deleted"
+    else
+      branch_type="local only, no remote"
+    fi
+
+    echo "Branch: $branch ($branch_type)"
+    echo -n "Delete this branch? [y/N] "
+    read -r answer
+
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+      # Attempt to delete the branch
+      if git branch -d "$branch"; then
+        echo "Branch '$branch' deleted."
+        echo "----------------------------------------"
+      else
+        echo "Could not delete branch '$branch' with -d (safe delete)."
+        echo -n "Force delete with -D instead? [y/N] "
+        read -r force_answer
+        if [[ "$force_answer" =~ ^[Yy]$ ]]; then
+          if git branch -D "$branch"; then
+            echo "Branch '$branch' force deleted."
+            echo "----------------------------------------"
+          else
+            echo "Failed to force delete branch '$branch'."
+            echo "----------------------------------------"
+          fi
+        else
+          echo "Skipping force deletion of branch '$branch'."
+          echo "----------------------------------------"
+        fi
+      fi
+    else
+      echo "Skipping branch '$branch'."
+      echo "----------------------------------------"
+    fi
+  done
+}
 # Switch to different git branch
 export git_switch() {export
     # Check if we're inside a git repository
