@@ -42,11 +42,11 @@ Streamlined configuration files for zsh, bash, and PowerShell across Linux distr
 wget -O ~/.profile "https://raw.githubusercontent.com/MarcJose/shell/main/archlinux/.profile"
 wget -O ~/.zshrc   "https://raw.githubusercontent.com/MarcJose/shell/main/archlinux/.zshrc"
 
-# Ubuntu 24.04LTS
+# Ubuntu 24.04 LTS
 wget -O ~/.profile "https://raw.githubusercontent.com/MarcJose/shell/main/ubuntu/.profile"
 wget -O ~/.zshrc   "https://raw.githubusercontent.com/MarcJose/shell/main/ubuntu/.zshrc"
 
-# Ubuntu 24.04LTS (WSL)
+# Ubuntu 24.04 LTS (WSL)
 wget -O ~/.profile "https://raw.githubusercontent.com/MarcJose/shell/main/wsl-ubuntu/.profile"
 wget -O ~/.zshrc   "https://raw.githubusercontent.com/MarcJose/shell/main/wsl-ubuntu/.zshrc"
 ```

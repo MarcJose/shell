@@ -161,15 +161,16 @@ install_packages() {
   sudo add-apt-repository -y ppa:ondrej/php
 
   # Adding OpenTofu repository (Terraform alternative)
+  sudo install -m 0755 -d /etc/apt/keyrings
   curl -fsSL https://get.opentofu.org/opentofu.gpg \
     | sudo tee /etc/apt/keyrings/opentofu.gpg >/dev/null
   curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey \
     | sudo gpg --no-tty --batch --dearmor -o /etc/apt/keyrings/opentofu-repo.gpg >/dev/null
   sudo chmod a+r /etc/apt/keyrings/opentofu.gpg /etc/apt/keyrings/opentofu-repo.gpg
-  echo 'deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any any main' \
+  echo "deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main
+deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main" \
     | sudo tee /etc/apt/sources.list.d/opentofu.list > /dev/null
-  echo 'deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any any main' \
-    | sudo tee -a /etc/apt/sources.list.d/opentofu.list > /dev/null
+  sudo chmod a+r /etc/apt/sources.list.d/opentofu.list
 
   # Add HashiCorp repository
   wget -O - https://apt.releases.hashicorp.com/gpg \
@@ -178,17 +179,17 @@ install_packages() {
     | sudo tee /etc/apt/sources.list.d/hashicorp.list
 
   # Add Trivy repository
-  wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key \
+  wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key  \
     | gpg --dearmor \
     | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
   echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" \
     | sudo tee -a /etc/apt/sources.list.d/trivy.list
 
   # Add Kubernetes repository
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /" \
+    | sudo tee /etc/apt/sources.list.d/kubernetes.list
   curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key \
     | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' \
-    | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
   # Add IBM repository
   curl https://public.dhe.ibm.com/software/ibmi/products/odbc/debs/dists/1.1.0/ibmi-acs-1.1.0.list \

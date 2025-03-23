@@ -17,7 +17,7 @@ We take the security of this project seriously. If you have discovered a securit
 
 1. **Do Not** disclose the vulnerability publicly until it has been addressed by our team.
 
-2. Please email us at [marc@hahn-jose.de](mailto:marc@hahn-jose.de?subject=%5BSECURITY%5D%20Project%20Name) with the following details:
+2. Please email us at [marc@hahn-jose.de](mailto:marc@hahn-jose.de?subject=%5BSECURITY%5D%20Shell) with the following details:
 
    - A description of the vulnerability
    - Steps to reproduce the issue

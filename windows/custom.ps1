@@ -25,8 +25,8 @@ function Install-WingetPackages {
             'Microsoft.OpenSSH.Beta',
             'Microsoft.PowerShell',
             'ExclaimerLtd.CloudSignatureUpdateAgent',
-            'IDRIX.VeraCrypt',
-            'Microsoft.Edge',
+            # 'IDRIX.VeraCrypt',
+            # 'Microsoft.Edge',
             'Adobe.Acrobat.Reader.64-bit'
         )
 
@@ -112,7 +112,7 @@ function Install-ScoopPackages {
         # Office
         scoop install extras/libreoffice                 # LibreOffice
         #scoop install extras/onlyoffice-desktopeditors   # OnlyOffice
-        scoop install extras/notepadplusplus             # Notepad++
+        # scoop install extras/notepadplusplus             # Notepad++
         reg import "$env:USERPROFILE\scoop\apps\notepadplusplus\current\install-context.reg"
         scoop install extras/obsidian                    # Obsidian
         #scoop install extras/krita                       # Krita
@@ -125,7 +125,7 @@ function Install-ScoopPackages {
         scoop install extras/gimp                        # Gimp
 
         # Internet
-        scoop install extras/firefox                     # Firefox
+        # scoop install extras/firefox                     # Firefox
         scoop install extras/chromium                    # Chromium
 
         # Programming / IDE's
@@ -141,7 +141,7 @@ function Install-ScoopPackages {
         #scoop install extras/rocketchat-client           # Rocket Chat
         #scoop install extras/signal                      # Signal
         #scoop install extras/telegram                    # Telegram
-        scoop install extras/zoom                        # Zoom
+        # scoop install extras/zoom                        # Zoom
 
         # Windows
         scoop install extras/windows-terminal
@@ -226,7 +226,7 @@ function Install-VSCodeExtensions {
             'eamodio.gitlens',                                      # GitLens
             "github.vscode-github-actions",                         # GitHub Actions
             "GitHub.vscode-pull-request-github",                    # GitHub Pull Requests
-            
+
             'ms-vscode.azure-account',                              # Azure Utilities
             'ms-vscode.azure-repos',
             'msazurermtools.azurerm-vscode-tools',
@@ -235,21 +235,21 @@ function Install-VSCodeExtensions {
             'ms-kubernetes-tools.vscode-aks-tools',
             'ms-codespaces-tools.ado-codespaces-auth',
             'ms-vscode.powershell',                                 # PowerShell
-            
+
             'ms-vscode.hexeditor',                                  # Hex Editor
             'redhat.vscode-yaml',                                   # YAML
             "mechatroner.rainbow-csv",                              # CSV
             "jock.svg",                                             # SVG
-            "bierner.markdown-checkbox"                             # Markdown Checkboxes
-            "bierner.markdown-emoji"                                # Markdown Emojis
-            "bierner.markdown-footnotes"                            # Markdown Footnotes
-            "bierner.markdown-preview-github-styles"                # Markdown Preview Github
-            "bierner.markdown-mermaid"                              # Markdown Mermaid Diagrams
-            "bierner.markdown-yaml-preamble"                        # Markdown YAML
-            "johnpapa.read-time"                                    # Reading Time
-            "ms-vscode.wordcount"                                   # Word Count
+            "bierner.markdown-checkbox",                            # Markdown Checkboxes
+            "bierner.markdown-emoji",                               # Markdown Emojis
+            "bierner.markdown-footnotes",                           # Markdown Footnotes
+            "bierner.markdown-preview-github-styles",               # Markdown Preview Github
+            "bierner.markdown-mermaid",                             # Markdown Mermaid Diagrams
+            "bierner.markdown-yaml-preamble",                       # Markdown YAML
+            "johnpapa.read-time",                                   # Reading Time
+            "ms-vscode.wordcount",                                  # Word Count
 
-            "ms-vscode.powershell"
+            "ms-vscode.powershell",
 
             'ms-vscode.live-server',                                # Live Server
             'ms-vsliveshare.vsliveshare'                            # Live Share
@@ -288,8 +288,20 @@ function Setup-WSL {
         wsl --set-default-version 2
 
         # Create WSL config
-        $WSL_CPU_CORES = [Environment]::ProcessorCount / 2
-        $WSL_MEMORY = ((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum / 1gb) / 2
+        $totalMemoryGB = [math]::Floor((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB)
+        $WSL_MEMORY = if ($totalMemoryGB -gt 32) {
+            16  # Cap at 16GB for high-memory systems
+        } elseif ($totalMemoryGB -gt 16) {
+            8   # 8GB for systems with 16-32GB
+        } else {
+            [math]::Floor($totalMemoryGB / 2)  # Half of available memory for low-memory systems
+        }
+        $totalCPUs = [Environment]::ProcessorCount
+        $WSL_CPU_CORES = if ($totalCPUs -gt 16) {
+            8   # Cap at 8 cores for high-CPU systems
+        } else {
+            [math]::Floor($totalCPUs / 2)  # Half of available cores
+        }
         @"
 [wsl2]
 # Limits WSL2's memory to n gigabytes

@@ -3,7 +3,8 @@ param(
     [switch]$CreateSymLink,
     [switch]$Force,
     [switch]$CreateLocalProfile,
-    [switch]$SkipPackageManagers
+    [switch]$SkipPackageManagers,
+    [switch]$SkipBloatwareRemoval
 )
 
 $ErrorActionPreference = 'Stop'
@@ -388,6 +389,10 @@ function Install-PowerShellProfile {
 }
 
 # Run the installation
-Remove-DefaultBloat
+if (-not $SkipBloatwareRemoval) {
+    Remove-DefaultBloat
+} else {
+    Write-Status "Skipping bloatware removal as requested" -Color "Yellow"
+}
 Install-NPipeRelay
 Install-PowerShellProfile -CreateSymLink:$CreateSymLink -Force:$Force -CreateLocalProfile:$CreateLocalProfile
