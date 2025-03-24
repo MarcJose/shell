@@ -353,6 +353,7 @@ elif echo "${GPU_VENDOR}" | grep -Eiq 'amd|radeon'; then
     export LIBVA_DRIVER_NAME='radeonsi'
     # Use VA-API as VDPAU backend
     export VDPAU_DRIVER='va_gl'
+    export RADV_PERFTEST='video_decode,video_encode'
 elif echo "${GPU_VENDOR}" | grep -iq 'intel'; then
     # Intel GPU configuration
     # VA-API driver for Intel
