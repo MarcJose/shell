@@ -798,8 +798,8 @@ setup_user_environment() {
            ${HOME}/.local/state/zsh \
            ${HOME}/.ssh \
            ${HOME}/workspace \
-           /run/user/$(id-u)/urxvtd \
-           /run/user/$(id-u)/Xauthority
+           /run/user/$(id -u)/urxvtd \
+           /run/user/$(id -u)/Xauthority
 
   # Create config files
   [[ ! -f ${HOME}/.profile.local ]] && touch ${HOME}/.profile.local
