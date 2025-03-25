@@ -217,7 +217,7 @@ deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-rep
     odbcinst openssl \
     pciutils perl plocate python3-full python3-dev python3-pip python3-setuptools python3-venv python3-virtualenv php php-{apcu,bcmath,bz2,cgi,cli,common,curl,fpm,gd,gmp,imagick,imap,intl,json,ldap,mbstring,memcached,mysql,odbc,phpdbg,pspell,readline,redis,snmp,soap,sqlite3,sybase,tidy,xml,xmlrpc,zip} phpmyadmin \
     rmlint rsync rustup \
-    sysstat scdaemon screen smem socat sqlite3 \
+    sysstat scdaemon screen smem socat sqlite3 sl \
     texlive-full tmux tofu trash-cli tree trivy \
     unixodbc unixodbc-dev unzip unattended-upgrades \
     vim vim-latexsuite vim-syntastic \
@@ -377,25 +377,41 @@ EOF
   backup_file /etc/ssh/moduli
   cat << EOF | sudo tee /etc/ssh/sshd_config.d/custom.conf
 # Settings partially based on:
-# https://www.ssh-audit.com/hardening_guides.html#ubuntu_22_04_lts
+# https://www.ssh-audit.com/hardening_guides.html#ubuntu_24_04_lts
 # https://infosec.mozilla.org/guidelines/openssh.html
+# You can test with ssh-audit:
+# ssh-audit localhost -p 22
+
 LogLevel Verbose
+
 HostKey /etc/ssh/ssh_host_ed25519_key
 HostKey /etc/ssh/ssh_host_rsa_key
+
 PermitRootLogin no
 MaxAuthTries 3
 MaxSessions 2
+
 PasswordAuthentication no
 AuthenticationMethods publickey
+
 AllowAgentForwarding no
 AllowTcpForwarding no
 X11Forwarding no
+
 Compression no
 ClientAliveInterval 60
+
 Subsystem sftp /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
-KexAlgorithms -diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group14-sha256,diffie-hellman-group-exchange-sha1,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521
-Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
-MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com
+
+RequiredRSASize 3072
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-gcm@openssh.com,aes128-ctr
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com
+HostKeyAlgorithms sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+CASignatureAlgorithms sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+HostbasedAcceptedAlgorithms sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+PubkeyAcceptedAlgorithms sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+
 AllowUsers ${CURRENT_USER} git
 
 EOF
@@ -818,6 +834,9 @@ setup_user_environment() {
     cat << EOF | tee ${HOME}/.ssh/config
 # Settings partially taken from:
 # https://www.ssh-audit.com/hardening_guides.html#ubuntu_22_04_linux_mint_21
+# You can test with ssh-audit:
+# ssh-audit -c
+# ssh -p 2222 anything@localhost
 
 # SSH over Session Manager
 # Open tunnel with ssh i-xxxxxx -L 5555:10.x.x.x:22 (5555 = local port, 22 = host port)
@@ -826,25 +845,25 @@ host i-* mi-*
 
 Host bitbucket.com
   HostName                    bitbucket.com
-  #Port                        22
+  Port                        22
   #User                        Username
   #IdentityFile                ~/.ssh/id_bitbucket
 
 Host dev.azure.com
   HostName                    dev.azure.com
-  #Port                        22
+  Port                        22
   #User                        Username
   #IdentityFile                ~/.ssh/id_azure
 
 Host github.com
   HostName                    github.com
-  #Port                        22
+  Port                        22
   #User                        Username
   #IdentityFile                ~/.ssh/id_github
 
 Host gitlab.com
   HostName                    gitlab.com
-  #Port                        22
+  Port                        22
   #User                        Username
   #IdentityFile                ~/.ssh/id_gitlab
 
@@ -856,13 +875,14 @@ Host *
   ControlPath                 /tmp/%r@%h:%p
   ServerAliveInterval         30
   ServerAliveCountMax         10
-  Ciphers                     chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
-  KexAlgorithms               -ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha256
-  MACs                        hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com
-  HostKeyAlgorithms           sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
-  CASignatureAlgorithms       sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
-  HostbasedAcceptedAlgorithms sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-256
-  PubkeyAcceptedAlgorithms    sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-256
+  RequiredRSASize 3072
+  Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-gcm@openssh.com,aes128-ctr
+  KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512
+  MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com
+  HostKeyAlgorithms sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+  CASignatureAlgorithms sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+  HostbasedAcceptedAlgorithms sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+  PubkeyAcceptedAlgorithms sk-ssh-ed25519-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,ssh-ed25519,rsa-sha2-512,rsa-sha2-256
 
 EOF
   fi
@@ -968,11 +988,11 @@ EOF
   # Configure GPG
   cat << EOF | tee ${HOME}/.local/share/gnupg/dirmngr.conf
 keyserver hkps://keys.openpgp.org
-#keyserver hkps://pgpkeys.eu
-#keyserver hkps://pgp.mit.edu
-#keyserver hkps://keyring.debian.org
-#keyserver hkps://keyserver.ubuntu.com
-#keyserver hkps://pgp.surf.nl
+keyserver hkps://pgpkeys.eu
+keyserver hkps://pgp.mit.edu
+keyserver hkps://keyring.debian.org
+keyserver hkps://keyserver.ubuntu.com
+keyserver hkps://pgp.surf.nl
 
 EOF
   cat << EOF | tee ${HOME}/.local/share/gnupg/gpg.conf
@@ -1065,6 +1085,66 @@ EOF
   if [[ ! -f ${HOME}/.config/vim/vimrc ]];
   then
     cat << EOF | tee ${HOME}/.config/vim/vimrc
+""" Fancy Vim Configuration
+
+" =============================================================================
+" === GENERAL SETTINGS ===
+" =============================================================================
+set nocompatible               " Use Vim settings, rather than Vi settings
+filetype plugin indent on      " Enable file type detection and do language-dependent indenting
+syntax enable                  " Enable syntax highlighting
+set encoding=utf-8             " Set encoding to UTF-8
+set fileencoding=utf-8         " Set file encoding to UTF-8
+set termencoding=utf-8         " Set terminal encoding to UTF-8
+set backspace=indent,eol,start " Allow backspacing over everything in insert mode
+set history=1000               " Keep 1000 lines of command line history
+set ruler                      " Show the cursor position all the time
+set showcmd                    " Display incomplete commands
+set incsearch                  " Do incremental searching
+set hlsearch                   " Highlight search results
+set ignorecase                 " Ignore case when searching
+set smartcase                  " Override ignorecase if search contains uppercase
+set autoread                   " Auto-reload files changed outside of Vim
+set hidden                     " Allow buffers to be hidden without saving
+set laststatus=2               " Always show statusline
+set number                     " Show line numbers
+" set relativenumber             " Show relative line numbers
+set scrolloff=8                " Keep 8 lines above/below cursor when scrolling
+set sidescrolloff=8            " Keep 8 columns left/right of cursor when scrolling horizontally
+set mouse=a                    " Enable mouse support
+set wildmenu                   " Enhanced command-line completion
+set wildmode=longest:full,full " Complete longest common string, then list alternatives
+set completeopt=menuone,popup,noselect " Better completion experience
+set updatetime=300             " Reduce updatetime for better UX
+set timeoutlen=500             " Reduce timeout for key combinations
+set shortmess+=c               " Don't pass messages to ins-completion-menu
+set signcolumn=yes             " Always show the signcolumn
+set cursorline                 " Highlight current line
+set nowrap                     " Don't wrap lines
+set diffopt+=vertical          " Use vertical splits for diffs
+set splitright                 " Open new vertical splits to the right
+set splitbelow                 " Open new horizontal splits below
+set noerrorbells               " No sounds on errors
+set visualbell                 " No visual flash on error
+set t_vb=                      " Disable visual bell terminal code
+set list                       " Show invisible characters
+set listchars=tab:>\ ,trail:·  " Show tabs and trailing spaces
+set background=dark            " Use dark background
+set shiftwidth=2               " Number of spaces to use for each step of (auto)indent
+set tabstop=2                  " Number of spaces that a <Tab> counts for
+set expandtab                  " Use spaces instead of tabs
+set showmode                   " Show current mode in command-line
+set showmatch                  " Show matching brackets when text indicator is over them
+set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.flv,*.img,*.xlsx " Ignore these file types in wildmenu
+
+" Backup, swap and undo files
+set nobackup                   " Don't create backup files
+set nowritebackup              " Don't write backup files
+set noswapfile                 " Don't use swap files
+set undofile                   " Persistent undo
+set undodir=~/.vim/undo        " Set directory for undo files
+
+" Create directories if they don't exist
 set runtimepath^=$XDG_CONFIG_HOME/vim
 set runtimepath+=$XDG_DATA_HOME/vim
 set runtimepath+=$XDG_CONFIG_HOME/vim/after
@@ -1076,36 +1156,22 @@ set backupdir=$XDG_STATE_HOME/vim/backup | call mkdir(&backupdir, 'p')
 set directory=$XDG_STATE_HOME/vim/swap   | call mkdir(&directory, 'p')
 set undodir=$XDG_STATE_HOME/vim/undo     | call mkdir(&undodir,   'p')
 set viewdir=$XDG_STATE_HOME/vim/view     | call mkdir(&viewdir,   'p')
+
+" =============================================================================
+" === COLOR SCHEME CONFIGURATION ===
+" =============================================================================
+" Enable 24-bit color support if available
+if has('termguicolors')
+  set termguicolors
+endif
+
 if !has('nvim') | set viminfofile=$XDG_STATE_HOME/vim/viminfo | endif
-set nocompatible
-filetype on
-filetype plugin on
-filetype indent on
-syntax on
-set mouse=a
-set number
-set incsearch
-set hlsearch
-set shiftwidth=2
-set tabstop=2
-set expandtab
-set nobackup
-set scrolloff=10
-set nowrap
-set ignorecase
-set smartcase
-set showcmd
-set showmode
-set showmatch
-set history=1000
-set wildmenu
-set wildmode=list:longest
-set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.flv,*.img,*.xlsx
+
+" Custom status line configuration
 set statusline=
 set statusline+=\ %F\ %M\ %Y\ %R
 set statusline+=%=
 set statusline+=\ ascii:\ %b\ hex:\ 0x%B\ row:\ %l\ col:\ %c\ percent:\ %p%%
-set laststatus=2
 
 EOF
   fi
@@ -1138,6 +1204,9 @@ EOF
   if [[ ! -f ${HOME}/.config/aws/credentials ]];
   then
     cat << EOF | tee ${HOME}/.config/aws/credentials
+# Configure with:
+# aws configure [sso]
+
 [default]
 aws_access_key_id =
 aws_secret_access_key =

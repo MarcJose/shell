@@ -1,7 +1,6 @@
 # Enable TLS 1.2 for compatibility with older PowerShell versions
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-
 $PROFILE_LOCAL = Join-Path (Split-Path $PROFILE) "Microsoft.PowerShell_profile.local.ps1"
 $SCRIPT_VERSION = "1.0.0"
 $GITHUB_REPO_URL = "https://raw.githubusercontent.com/MarcJose/shell/main/windows/Microsoft.PowerShell_profile.ps1"
