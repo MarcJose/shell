@@ -17456,7 +17456,7 @@ alias whatprovides='pkgfile --search'
 # System monitoring
 alias connections='sudo netstat --tcp --udp -alnp'
 alias running-services='systemctl list-units | grep -E "UNIT.*LOAD.*ACTIVE.*SUB.*DESCRIPTION|running"'
-alias space='df -h --print-type --exclude-type=tmpfs --exclude-type=devtmpfs'
+alias space='df -h --print-type --exclude-type=efivarfs --exclude-type=fuse.sshfs --exclude-type=tmpfs --exclude-type=devtmpfs'
 alias temperature='sensors | grep Package | sed -e '\''s/\+//g'\'' -e '\''s/\..*/\°C/g'\'' | awk '\''{print "CPU: " $4}'\''; echo "GPU: $(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits || aticonfig --od-gettemperature)°C"'
 #------------------------------------------------------------------------------
 # Security and System Check Aliases
