@@ -206,7 +206,7 @@ deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-rep
     clang colordiff command-not-found cowsay cron \
     debsecan debsums default-jdk \
     fd-find fzf \
-    git git-crypt git-lfs graphviz \
+    git git-crypt git-delta git-lfs graphviz \
     htop \
     iftop imagemagick inetutils-telnet iotop ibm-iaccess \
     jc jq \
@@ -925,6 +925,7 @@ EOF
     glog = !git log --graph --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
     tlog = !git log --graph --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''        %C(dim white)= %an <%ae> =%C(reset)%n''        %C(white)%s%C(reset)'
     clog = !git log --pretty=format:'[%C(blue)%h%C(reset)][%C(green)%aI%C(reset)][%G?][%an <%ae>] %s'
+    sidediff = "!f() { if [ $# -lt 2 ]; then echo \"Usage: git sidediff <commit1> <commit2> [-- <file_path>]\"; return 1; fi; if [ $# -eq 2 ]; then git diff \"$1\" \"$2\"; else if [ \"$3\" = \"--\" ]; then git diff \"$1\" \"$2\" -- \"${@:4}\"; else git diff \"$1\" \"$2\" \"$3\"; fi; fi; }; f"
 [color]
     ui = true
 [commit]
@@ -933,8 +934,13 @@ EOF
     autocrlf = input
     editor = vim
     eol = lf
-[credential "https://dev.azure.com]
+    pager = delta
+[credential "https://dev.azure.com"]
     useHttpPath = true
+[delta]
+    line-numbers = true
+    navigate = true
+    side-by-side = true
 [diff]
     colorMoved = default
     renamelimit = 99999
@@ -964,6 +970,10 @@ EOF
     file-types = **
     hard = true
     grading = true
+[interactive]
+    diffFilter = delta --color-only
+[merge]
+    conflictstyle = zdiff3
 [pull]
     rebase = true
 [push]
@@ -976,6 +986,7 @@ EOF
     name = John Doe
     email = john.doe@example.com
     signingkey = ABCDEFGH123
+
 EOF
   fi
 
