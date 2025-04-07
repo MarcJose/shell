@@ -359,9 +359,9 @@ alias cd='z'
 [ -f /usr/bin/tofu ] && complete -o nospace -C /usr/bin/tofu tofu
 # Enable Bun completion if installed
 [ -s "${BUN_INSTALL}/_bun" ] && . "${BUN_INSTALL}/_bun"
-[[ ":$PATH:" != *":${BUN_INSTALL}:"* ]] && export PATH="${BUN_INSTALL}/bin:$PATH"
+export PATH="${BUN_INSTALL}/bin:$PATH"
 # Enable Deno completion if installed
-[[ ":$FPATH:" != *":${XDG_CONFIG_HOME}/zsh/completions:"* ]] && export FPATH="${XDG_CONFIG_HOME}/zsh/completions:$FPATH"
+export FPATH="${XDG_CONFIG_HOME}/zsh/completions:$FPATH"
 # Enable kubectl completion if installed
 [ -x "$(command -v kubectl)" ] && . <(kubectl completion zsh)
 
