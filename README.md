@@ -28,8 +28,11 @@ Streamlined configuration files for zsh, bash, and PowerShell across Linux distr
 │   └── .profile
 ├── wsl-ubuntu/
 │   ├── .zshrc
-│   └── .profile
+│   ├── .profile
+│   └── setup.sh
 └── windows/
+    ├── custom.ps1
+    ├── install.ps1
     └── Microsoft.PowerShell_profile.ps1
 ```
 
@@ -62,6 +65,24 @@ iex "& { $(irm https://raw.githubusercontent.com/MarcJose/shell/main/windows/ins
 # As user
 Set-ExecutionPolicy -Scope CurrentUser Bypass -Force
 iex "& { $(irm https://raw.githubusercontent.com/MarcJose/shell/main/windows/custom.ps1) } -Force"
+```
+
+If you want to enable certain servicesi n WSL on boot you can execute this as administrator:
+
+```powershell
+# Cron
+$Action = New-ScheduledTaskAction -Execute "C:\Windows\System32\wsl.exe" -Argument "sudo /usr/sbin/service cron start"
+$Trigger = New-ScheduledTaskTrigger -AtStartup
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+$Task = New-ScheduledTask -Action $Action -Trigger $Trigger -Settings $Settings
+Register-ScheduledTask -TaskName "WSL Cron Service Startup" -InputObject $Task -User "SYSTEM"
+
+# Docker
+$Action = New-ScheduledTaskAction -Execute "C:\Windows\System32\wsl.exe" -Argument "sudo /usr/sbin/service docker start"
+$Trigger = New-ScheduledTaskTrigger -AtStartup
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+$Task = New-ScheduledTask -Action $Action -Trigger $Trigger -Settings $Settings
+Register-ScheduledTask -TaskName "WSL Docker Service Startup" -InputObject $Task -User "SYSTEM"
 ```
 
 ## Updates

@@ -24,6 +24,7 @@ function Install-WingetPackages {
         $wingetPackages = @(
             'Microsoft.OpenSSH.Beta',
             'Microsoft.PowerShell',
+            'Docker.DockerDesktop',
             'ExclaimerLtd.CloudSignatureUpdateAgent',
             # 'IDRIX.VeraCrypt',
             # 'Microsoft.Edge',
@@ -112,7 +113,7 @@ function Install-ScoopPackages {
         # Office
         scoop install extras/libreoffice                 # LibreOffice
         #scoop install extras/onlyoffice-desktopeditors   # OnlyOffice
-        # scoop install extras/notepadplusplus             # Notepad++
+        #scoop install extras/notepadplusplus             # Notepad++
         reg import "$env:USERPROFILE\scoop\apps\notepadplusplus\current\install-context.reg"
         scoop install extras/obsidian                    # Obsidian
         #scoop install extras/krita                       # Krita
@@ -125,7 +126,7 @@ function Install-ScoopPackages {
         scoop install extras/gimp                        # Gimp
 
         # Internet
-        # scoop install extras/firefox                     # Firefox
+        scoop install extras/firefox                     # Firefox
         scoop install extras/chromium                    # Chromium
 
         # Programming / IDE's
@@ -141,7 +142,7 @@ function Install-ScoopPackages {
         #scoop install extras/rocketchat-client           # Rocket Chat
         #scoop install extras/signal                      # Signal
         #scoop install extras/telegram                    # Telegram
-        # scoop install extras/zoom                        # Zoom
+        #scoop install extras/zoom                        # Zoom
 
         # Windows
         scoop install extras/windows-terminal

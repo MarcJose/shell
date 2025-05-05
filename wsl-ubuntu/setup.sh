@@ -161,7 +161,6 @@ install_packages() {
   sudo add-apt-repository -y ppa:ondrej/php
 
   # Adding OpenTofu repository (Terraform alternative)
-  sudo install -m 0755 -d /etc/apt/keyrings
   curl -fsSL https://get.opentofu.org/opentofu.gpg \
     | sudo tee /etc/apt/keyrings/opentofu.gpg >/dev/null
   curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey \
@@ -185,6 +184,16 @@ deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-rep
   echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" \
     | sudo tee -a /etc/apt/sources.list.d/trivy.list
 
+  # Add Docker's official GPG key:
+  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
   # Add Kubernetes repository
   echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /" \
     | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -198,13 +207,14 @@ deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-rep
   # Set permissions
   sudo chmod a+r /etc/apt/sources.list.d/*.list
   sudo chmod 644 /etc/apt/keyrings/*.gpg
+  sudo chmod 644 /etc/apt/keyrings/*.asc
 
   # Install additional packages
   sudo apt-get update -y -q
   sudo apt-get install -y \
     bat bc bind9-dnsutils \
-    clang colordiff command-not-found cowsay cron \
-    debsecan debsums default-jdk \
+    clang colordiff command-not-found containerd.io cowsay cron \
+    debsecan debsums default-jdk docker-buildx-plugin docker-compose-plugin docker-ce docker-ce-cli \
     fd-find fzf \
     git git-crypt git-delta git-lfs graphviz \
     htop \
@@ -673,10 +683,18 @@ EOF
   "iptables" : false,
   "http-proxy" : "http://8.8.8.8",
   "https-proxy" : "https://8.8.8.8",
-  "no-proxy" : "localhost,127.0.0.1"
+  "no-proxy" : "localhost,127.0.0.1",
+  "default-address-pools": [
+    {
+      "base": "192.168.0.0/16",
+      "size": 24
+    }
+  ]
 }
 
 EOF
+  sudo rm /var/run/docker.sock
+  sudo ln -s /mnt/wsl/shared-docker/docker.sock /var/run/docker.sock
 
   # Setup issue files
   cat << EOF | sudo tee /etc/issue
