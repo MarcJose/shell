@@ -306,6 +306,8 @@ function Setup-WSL {
 [wsl2]
 # Limits WSL2's memory to n gigabytes
 memory=${WSL_MEMORY}GB
+# Enable UI applications
+guiApplications = true
 
 # Allocates n virtual CPU cores to WSL2
 processors=${WSL_CPU_CORES}
@@ -316,6 +318,10 @@ processors=${WSL_CPU_CORES}
 
 # Uses mirrored networking mode to share the Windows network interface
 networkingMode=mirrored
+
+# Allow you to run Windows binaries from within WSL
+[interop]
+enabled = true
 "@ | Tee-Object -FilePath "$env:USERPROFILE\.wslconfig"
 
         # Install Ubuntu 24.04
