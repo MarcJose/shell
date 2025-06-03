@@ -319,10 +319,6 @@ processors=${WSL_CPU_CORES}
 
 # Uses mirrored networking mode to share the Windows network interface
 networkingMode=mirrored
-
-# Allow you to run Windows binaries from within WSL
-[interop]
-enabled = true
 "@ | Tee-Object -FilePath "$env:USERPROFILE\.wslconfig"
 
         # Install Ubuntu 24.04
