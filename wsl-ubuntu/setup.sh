@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #==============================================================================
 # WSL Ubuntu 24.04 LTS Setup Script
 # Version: 1.0.0
@@ -195,10 +196,11 @@ echo \
 sudo apt-get update
 
   # Add Kubernetes repository
-  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /" \
-    | sudo tee /etc/apt/sources.list.d/kubernetes.list
-  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key \
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key \
     | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' \
+    | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
   # Add IBM repository
   curl https://public.dhe.ibm.com/software/ibmi/products/odbc/debs/dists/1.1.0/ibmi-acs-1.1.0.list \
@@ -206,6 +208,7 @@ sudo apt-get update
 
   # Set permissions
   sudo chmod a+r /etc/apt/sources.list.d/*.list
+  sudo chmod 644 /etc/apt/sources.list.d/*.list
   sudo chmod 644 /etc/apt/keyrings/*.gpg
   sudo chmod 644 /etc/apt/keyrings/*.asc
 
@@ -223,7 +226,7 @@ sudo apt-get update
     kubeadm kubectl kubectx \
     ldap-utils libassuan-dev libclang-dev libgcrypt20-dev libgpg-error-dev libksba-dev libldap-dev libnpth0-dev libpam-tmpdir libpth-dev llvm logwatch linux-tools-generic \
     macchanger mariadb-server maven \
-    nano needrestart net-tools nginx nmap ntp \
+    nano needrestart net-tools nginx nginx-extras nmap ntp \
     odbcinst openssl \
     pciutils perl plocate python3-full python3-dev python3-pip python3-setuptools python3-venv python3-virtualenv php php-{apcu,bcmath,bz2,cgi,cli,common,curl,fpm,gd,gmp,imagick,imap,intl,json,ldap,mbstring,memcached,mysql,odbc,phpdbg,pspell,readline,redis,snmp,soap,sqlite3,sybase,tidy,xml,xmlrpc,zip} phpmyadmin \
     rmlint rsync rustup \
@@ -480,9 +483,18 @@ http {
     # Set maximum size of MIME type hash tables
     types_hash_max_size    2048;
     # Set size of bucket in the types hash tables
-    types_hash_bucket_size 64;
-    # Maximum allowed size for client request body (512MB allows large file uploads)
-    client_max_body_size   512M;
+    types_hash_bucket_size 128;
+    # Maximum allowed size for client request body (1024MB allows large file uploads)
+    client_max_body_size   1024MB;
+    # Increase hash table sizes for variables
+    variables_hash_max_size    2048;
+    variables_hash_bucket_size 128;
+    # Increase client body buffer size
+    client_body_buffer_size     64k;
+    # Increase client header buffer size
+    client_header_buffer_size   4k;
+    # Increase large client header buffers
+    large_client_header_buffers 8 16k;
 
     # Server timeouts (all set to 5 minutes)
     # Time to wait for response to proxy request
@@ -507,6 +519,8 @@ http {
     default_type application/octet-stream;
 
     # SSL Settings
+    # You can test your settings with this tool:
+    # * https://www.ssllabs.com/ssltest/
     # Only use TLSv1.3 (most secure TLS version)
     ssl_protocols             TLSv1.3;
     # Prioritize these elliptic curves for ECDH key exchange
@@ -570,11 +584,29 @@ http {
                       text/plain
                       text/xml;
 
+    # Default proxy buffer size
+    proxy_buffer_size         128k;
+    # Number and size of proxy buffers
+    proxy_buffers             8 128k;
+    # Size of busy buffers
+    proxy_busy_buffers_size   256k;
+    # Enable proxy buffering by default
+    proxy_buffering           on;
+    # Proxy temporary file settings
+    proxy_temp_file_write_size 256k;
+    proxy_max_temp_file_size   1024m;
+    proxy_temp_path           /var/cache/nginx/proxy_temp;
+
     # Rate Limiting Configuration
     # Define request rate limiting zone (100 requests per second with 32MB memory zone)
     limit_req_zone  \$binary_remote_addr zone=one:32m rate=100r/s;
     # Define connection limiting zone (based on client IP)
     limit_conn_zone \$binary_remote_addr zone=addr:32m;
+    # API rate limit zone - more restrictive for API endpoints
+    limit_req_zone \$binary_remote_addr zone=apilimit:32m rate=50r/s;
+
+    # Connection limiting
+    limit_conn addr 50;
 
     # Security settings
     # Hide NGINX version in error pages and response headers
@@ -583,6 +615,30 @@ http {
     proxy_hide_header X-Powered-By;
     # Remove Server header from proxied responses
     proxy_hide_header Server;
+
+    # Enable header inheritance for nested location blocks
+    map \$status \$conditional_security_headers {
+        default "";
+        '~^[23]' "1";  # Only for 2xx and 3xx responses
+    }
+
+    # Map for WebSocket upgrade handling
+    map \$http_upgrade \$connection_upgrade {
+        default upgrade;
+        '' close;
+    }
+
+    # Create proxy cache directory if it doesn't exist
+    # sudo mkdir -p /var/cache/nginx/proxy_cache
+    # sudo mkdir -p /var/cache/nginx/proxy_temp
+    # sudo chown -R www-data:www-data /var/cache/nginx/
+    # sudo chmod -R 755 /var/cache/nginx/
+    proxy_cache_path /var/cache/nginx/proxy_cache
+                     levels=1:2
+                     keys_zone=nextjs_cache:10m
+                     max_size=1g
+                     inactive=60m
+                     use_temp_path=off;
 
     # Include additional configuration files
     # Include all config files in conf.d directory

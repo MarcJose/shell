@@ -111,19 +111,19 @@ function Install-ScoopPackages {
         #scoop install extras/sysinternals                # Microsoft Sysinternals
 
         # Office
-        scoop install extras/libreoffice                 # LibreOffice
+        #scoop install extras/libreoffice                 # LibreOffice
         #scoop install extras/onlyoffice-desktopeditors   # OnlyOffice
-        #scoop install extras/notepadplusplus             # Notepad++
+        scoop install extras/notepadplusplus             # Notepad++
         reg import "$env:USERPROFILE\scoop\apps\notepadplusplus\current\install-context.reg"
-        scoop install extras/obsidian                    # Obsidian
+        #scoop install extras/obsidian                    # Obsidian
         #scoop install extras/krita                       # Krita
-        scoop install extras/kate                        # Kate
+        #scoop install extras/kate                        # Kate
         #scoop install extras/okular                      # Okular
 
         # Media
         scoop install extras/vlc                         # VLC
-        scoop install extras/inkscape                    # Inkscape
-        scoop install extras/gimp                        # Gimp
+        #scoop install extras/inkscape                    # Inkscape
+        #scoop install extras/gimp                        # Gimp
 
         # Internet
         scoop install extras/firefox                     # Firefox
@@ -228,11 +228,6 @@ function Install-VSCodeExtensions {
             "github.vscode-github-actions",                         # GitHub Actions
             "GitHub.vscode-pull-request-github",                    # GitHub Pull Requests
 
-            'ms-vscode.azure-account',                              # Azure Utilities
-            'ms-vscode.azure-repos',
-            'msazurermtools.azurerm-vscode-tools',
-            'ms-azuretools.vscode-azureterraform',
-            'ms-azure-devops.azure-pipelines',
             'ms-kubernetes-tools.vscode-aks-tools',
             'ms-codespaces-tools.ado-codespaces-auth',
             'ms-vscode.powershell',                                 # PowerShell
@@ -272,13 +267,6 @@ function Install-VSCodeExtensions {
 function Setup-WSL {
     try {
         Write-Status "Setting up WSL..." -Color "Yellow"
-
-        # Enable WSL feature
-        Write-Status "Enabling Windows Subsystem for Linux..."
-        dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-
-        Write-Status "Enabling Virtual Machine Platform..."
-        dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
 
         # Install WSL
         Write-Status "Installing WSL..."

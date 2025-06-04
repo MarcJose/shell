@@ -17240,6 +17240,48 @@ export __gpg_upload() {
     gpg --keyserver pgpkeys.eu --send-keys "${fingerprint}"
     gpg --export "${fingerprint}" | curl -T - "https://keys.openpgp.org"
 }
+# List Fail2ban status and banned IPs
+export fail2banLog () {
+  # Check if fail2ban is running
+  if systemctl is-active --quiet fail2ban; then
+    echo "Status: running"
+  else
+    echo "Status: inactive"
+  exit 1
+  fi
+
+  # Get list of jails
+  jails=$(sudo fail2ban-client status | grep "Jail list" | sed "s/^[^:]*:[ \t]*//g" | tr -d "'(),")
+  jail_list=($(echo $jails | xargs -n1))
+
+  # For each jail, show count and list IPs
+  for jail in "${jail_list[@]}"; do
+    # Skip empty entries
+    if [ -z "${jail}" ]; then
+      continue
+    fi
+
+    echo ""
+
+    # Get jail status
+    jail_status=$(sudo fail2ban-client status ${jail})
+    count=$(echo "${jail_status}" | grep "Currently banned" | cut -d':' -f2 | tr -d ' ' | xargs)
+
+    # If count wasn't found, set to 0
+    if [ -z "${count}" ]; then
+      count=0
+    fi
+
+    # Print jail name and count
+    echo "${jail}: ${count} banned IPs"
+
+    # Extract and print IP list if there are any
+    if [ "${count}" -gt 0 ]; then
+      ips=$(echo "${jail_status}" | grep "Banned IP list" | sed "s/^[^:]*:[ \t]*//g")
+      echo "${ips}"
+    fi
+  done
+}
 #------------------------------------------------------------------------------
 # Updater Functions
 #------------------------------------------------------------------------------
