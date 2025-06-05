@@ -218,7 +218,7 @@ sudo apt-get update
     bat bc bind9-dnsutils \
     clang colordiff command-not-found containerd.io cowsay cron \
     debsecan debsums default-jdk docker-buildx-plugin docker-compose-plugin docker-ce docker-ce-cli \
-    fd-find fzf \
+    fd-find ffmpeg fzf \
     git git-crypt git-delta git-lfs graphviz \
     htop \
     iftop imagemagick inetutils-telnet iotop ibm-iaccess \
@@ -231,7 +231,7 @@ sudo apt-get update
     pciutils perl plocate python3-full python3-dev python3-pip python3-setuptools python3-venv python3-virtualenv php php-{apcu,bcmath,bz2,cgi,cli,common,curl,fpm,gd,gmp,imagick,imap,intl,json,ldap,mbstring,memcached,mysql,odbc,phpdbg,pspell,readline,redis,snmp,soap,sqlite3,sybase,tidy,xml,xmlrpc,zip} phpmyadmin \
     rmlint rsync rustup \
     sysstat scdaemon screen smem socat sqlite3 sl \
-    texlive-full tmux tofu trash-cli tree trivy \
+    terraform texlive-full tmux tofu trash-cli tree trivy \
     unixodbc unixodbc-dev unzip unattended-upgrades \
     vim vim-latexsuite vim-syntastic \
     whois \
@@ -1404,9 +1404,9 @@ main() {
   install_packages
   progress "Enabling system services..."
   enable_system_services
-  progress "Configuring WSL-specific settings"
+  progress "Configuring WSL-specific settings..."
   configure_wsl
-  progress "Configuring system"
+  progress "Configuring system..."
   configure_system
   progress "Setting up user environment..."
   setup_user_environment
@@ -1414,8 +1414,8 @@ main() {
   setup_permissions
 
   # Final message
-  log "Setup completed successfully!"
-  log "System files backed up in \"${HOME}/.wsl_setup_backups/\""
+  log "Setup completed successfully\!"
+  log "System files backed up in \"${HOME}/.wsl_setup_backups\""
   log "Next steps:"
   log "   1. Restart WSL with 'wsl --shutdown' from PowerShell"
   log "   2. Upload your public SSH keys to the respective platforms"
