@@ -128,6 +128,13 @@ function Install-ScoopPackages {
         # Internet
         scoop install extras/firefox                     # Firefox
         scoop install extras/chromium                    # Chromium
+        New-Item -ItemType SymbolicLink -Path "$env:LOCALAPPDATA\Chromium\User Data" -Target "C:\Users\$env:USERNAME\scoop\apps\chromium\current\User Data"
+        $regPath = "HKCR:\ChromiumHTM.5U2HY26ANXMR5BC3YLOQSZI5DU\shell\open\command"
+        if (!(Test-Path $regPath)) {
+          New-Item -Path $regPath -Force
+        }
+        $regValue = "`"C:\Users\$env:USERNAME\scoop\apps\chromium\current\chrome.exe`" --user-data-dir=`"C:\Users\$env:USERNAME\scoop\apps\chromium\current\User Data`" %1"
+        Set-ItemProperty -Path $regPath -Name "(Default)" -Value $regValue
 
         # Programming / IDE's
         scoop install extras/vscode                      # Visual Studio Code
