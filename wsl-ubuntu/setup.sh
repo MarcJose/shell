@@ -103,21 +103,6 @@ check_network() {
   fi
 }
 
-# Set up backup functionality
-backup_file() {
-  local file="$1"
-  local backup_dir="${HOME}/.wsl_setup_backups/$(date +%Y-%m-%d)"
-
-  # Skip if file doesn't exist (prevents errors)
-  [[ ! -f "${file}" ]] && return 0
-
-  # Create backup directory with date for organization
-  mkdir -p "${backup_dir}"
-
-  # Create backup with timestamp to allow multiple backups of same file
-  cp -a "${file}" "${backup_dir}/$(basename ${file}).$(date +%H-%M-%S).bak"
-}
-
 #------------------------------------------------------------------------------
 # Function: update_system
 # Description: Updates and upgrades all system packages to their latest versions
@@ -274,7 +259,6 @@ enable_system_services() {
 #------------------------------------------------------------------------------
 configure_wsl() {
   # Create WSL configuration file for better Windows integration
-  backup_file /etc/wsl.conf
   cat << EOF | sudo tee /etc/wsl.conf
 # Enable systemd (needed for many services like Docker)
 [boot]
@@ -317,8 +301,6 @@ configure_system() {
 
   # DNS configuration - using multiple providers for redundancy
   # Google, Cloudflare, and Quad9 provide reliable DNS resolution
-  backup_file /etc/resolv.conf
-  backup_file /etc/resolv.conf.head
   cat << EOF | sudo tee /etc/resolv.conf.head
 # Options
 options edns0 single-request-reopen
@@ -343,13 +325,13 @@ nameserver 2620:fe::fe
 nameserver 2620:fe::9
 
 EOF
+  sudo rm /etc/resolv.conf
   sudo cp /etc/resolv.conf.head /etc/resolv.conf
   # Protect resolv.conf{.head} from being overwritten
   sudo chmod u=r,g=r,o=r /etc/resolv.conf.head /etc/resolv.conf
   sudo chattr +i /etc/resolv.conf.head /etc/resolv.conf
 
   # System performance tweaks
-  backup_file /etc/sysctl.conf
   cat << EOF | sudo tee /etc/sysctl.conf
 # Increase file watch limit for development tools
 fs.inotify.max_user_watches=524288
@@ -363,7 +345,6 @@ EOF
 
   # Configure journal
   sudo mkdir -p /etc/systemd/journald.conf.d
-  backup_file /etc/systemd/journald.conf.d/00-journal-size.conf
 cat << EOF | sudo tee /etc/systemd/journald.conf.d/00-journal-size.conf
 [Journal]
 SystemMaxUse=100M
@@ -371,8 +352,6 @@ SystemMaxUse=100M
 EOF
 
   # Configure sudo
-  backup_file /etc/sudoers.d/easteregg
-  backup_file /etc/sudoers.d/${CURRENT_USER}
   cat << EOF | sudo tee /etc/sudoers.d/easteregg
 # Enable easteregg
 Defaults insults
@@ -386,8 +365,6 @@ EOF
   sudo chmod u=rw,g=,o= /etc/sudoers.d/*
 
   # SSH hardening - disable weak encryption algorithms and mandate key-based auth
-  backup_file /etc/ssh/sshd_config.d/custom.conf
-  backup_file /etc/ssh/moduli
   cat << EOF | sudo tee /etc/ssh/sshd_config.d/custom.conf
 # Settings partially based on:
 # https://www.ssh-audit.com/hardening_guides.html#ubuntu_24_04_lts
@@ -438,8 +415,6 @@ EOF
   yes_or_no "Do you want to configure MariaDB? [yn]: " && sudo mariadb-secure-installation
 
   # Configure nginx
-  backup_file /etc/nginx/nginx.conf
-  backup_file /etc/nginx/sites-available/default
   cat << EOF | sudo tee /etc/nginx/nginx.conf
 # Main NGINX configuration file
 # This file contains global settings that apply to all virtual hosts
@@ -733,7 +708,6 @@ EOF
 
   # Configure Docker
   sudo mkdir -p /etc/docker
-  backup_file /etc/docker/daemon.json
   cat << EOF | sudo tee /etc/docker/daemon.json
 {
   "iptables" : false,
