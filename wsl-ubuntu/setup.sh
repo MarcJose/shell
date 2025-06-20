@@ -143,9 +143,6 @@ install_packages() {
   # Enable 32-bit architecture
   sudo dpkg --add-architecture i386
 
-  # Add PHP repository
-  sudo add-apt-repository -y ppa:ondrej/php
-
   # Adding OpenTofu repository (Terraform alternative)
   curl -fsSL https://get.opentofu.org/opentofu.gpg \
     | sudo tee /etc/apt/keyrings/opentofu.gpg >/dev/null
@@ -205,7 +202,7 @@ sudo apt-get update
     debsecan debsums default-jdk docker-buildx-plugin docker-compose-plugin docker-ce docker-ce-cli \
     fd-find ffmpeg fzf \
     git git-crypt git-delta git-lfs graphviz \
-    htop \
+    htop hyperfine \
     iftop imagemagick inetutils-telnet iotop ibm-iaccess \
     jc jq \
     kubeadm kubectl kubectx \
@@ -214,9 +211,9 @@ sudo apt-get update
     nano needrestart net-tools nginx nginx-extras nmap ntp \
     odbcinst openssl \
     pciutils perl plocate python3-full python3-dev python3-pip python3-setuptools python3-venv python3-virtualenv php php-{apcu,bcmath,bz2,cgi,cli,common,curl,fpm,gd,gmp,imagick,imap,intl,json,ldap,mbstring,memcached,mysql,odbc,phpdbg,pspell,readline,redis,snmp,soap,sqlite3,sybase,tidy,xml,xmlrpc,zip} phpmyadmin \
-    rmlint rsync rustup \
-    sysstat scdaemon screen smem socat sqlite3 sl \
-    terraform texlive-full tmux tofu trash-cli tree trivy \
+    rmlint rsync rustup ripgrep \
+    sysstat systemd systemd-sysv scdaemon screen smem socat sqlite3 sl \
+    terraform texlive-full tmux tofu trash-cli tree trivy tokei \
     unixodbc unixodbc-dev unzip unattended-upgrades \
     vim vim-latexsuite vim-syntastic \
     whois \
@@ -330,6 +327,16 @@ EOF
   # Protect resolv.conf{.head} from being overwritten
   sudo chmod u=r,g=r,o=r /etc/resolv.conf.head /etc/resolv.conf
   sudo chattr +i /etc/resolv.conf.head /etc/resolv.conf
+  mkdir -p /etc/systemd/resolved.conf.d/
+  cat << EOF | sudo tee /etc/systemd/resolved.conf.d/custom.conf
+[Resolve]
+DNS=8.8.8.8 8.8.4.4 1.1.1.1 9.9.9.9
+FallbackDNS=1.0.0.1 149.112.112.112
+DNSSEC=yes
+DNSOverTLS=yes
+MulticastDNS=no
+
+EOF
 
   # System performance tweaks
   cat << EOF | sudo tee /etc/sysctl.conf
@@ -936,9 +943,6 @@ EOF
   fi
   # Creating an SSH key for each major Git hosting provider
   # This allows separate identities for different platforms
-  [[ ! -f ${HOME}/.ssh/id_rsa ]] \
-    && yes_or_no "Do you want to set up a default SSH-RSA key? [yn]: " \
-    && ssh-keygen -t rsa -b 4096 -a 512 -f ${HOME}/.ssh/id_rsa -C ""
   [[ ! -f ${HOME}/.ssh/id_ed25519 ]] \
     && yes_or_no "Do you want to set up a default SSH-ED25519 key? [yn]: " \
     && ssh-keygen -t ed25519 -a 512 -f ${HOME}/.ssh/id_ed25519 -C ""
@@ -1065,6 +1069,10 @@ default-preference-list SHA512 SHA384 SHA256 AES256 AES192 AES ZLIB ZIP Uncompre
 cert-digest-algo SHA512
 s2k-digest-algo SHA512
 s2k-cipher-algo AES256
+s2k-count 65011712
+cipher-algo AES256
+digest-algo SHA512
+compress-algo ZLIB
 charset utf-8
 fixed-list-mode
 no-comments
@@ -1113,7 +1121,7 @@ term screen-256color
 #term rxvt-unicode-256color
 ## termcapinfo based
 #attrcolor b ".I"
-#termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+#termcapinfo xterm 'Co#256:AB=\\E[48;5;%dm:AF=\\E[38;5;%dm'
 #defbce on
 
 # Statusbar
@@ -1187,7 +1195,7 @@ set noerrorbells               " No sounds on errors
 set visualbell                 " No visual flash on error
 set t_vb=                      " Disable visual bell terminal code
 set list                       " Show invisible characters
-set listchars=tab:>\ ,trail:·  " Show tabs and trailing spaces
+set listchars=tab:>\\ ,trail:·  " Show tabs and trailing spaces
 set background=dark            " Use dark background
 set shiftwidth=2               " Number of spaces to use for each step of (auto)indent
 set tabstop=2                  " Number of spaces that a <Tab> counts for
@@ -1204,17 +1212,17 @@ set undofile                   " Persistent undo
 set undodir=~/.vim/undo        " Set directory for undo files
 
 " Create directories if they don't exist
-set runtimepath^=$XDG_CONFIG_HOME/vim
-set runtimepath+=$XDG_DATA_HOME/vim
-set runtimepath+=$XDG_CONFIG_HOME/vim/after
-set packpath^=$XDG_DATA_HOME/vim,$XDG_CONFIG_HOME/vim
-set packpath+=$XDG_CONFIG_HOME/vim/after,$XDG_DATA_HOME/vim/after
-let g:netrw_home = $XDG_DATA_HOME."/vim"
-call mkdir($XDG_DATA_HOME."/vim/spell", 'p')
-set backupdir=$XDG_STATE_HOME/vim/backup | call mkdir(&backupdir, 'p')
-set directory=$XDG_STATE_HOME/vim/swap   | call mkdir(&directory, 'p')
-set undodir=$XDG_STATE_HOME/vim/undo     | call mkdir(&undodir,   'p')
-set viewdir=$XDG_STATE_HOME/vim/view     | call mkdir(&viewdir,   'p')
+set runtimepath^=\$XDG_CONFIG_HOME/vim
+set runtimepath+=\$XDG_DATA_HOME/vim
+set runtimepath+=\$XDG_CONFIG_HOME/vim/after
+set packpath^=\$XDG_DATA_HOME/vim,\$XDG_CONFIG_HOME/vim
+set packpath+=\$XDG_CONFIG_HOME/vim/after,\$XDG_DATA_HOME/vim/after
+let g:netrw_home = \$XDG_DATA_HOME."/vim"
+call mkdir(\$XDG_DATA_HOME."/vim/spell", 'p')
+set backupdir=\$XDG_STATE_HOME/vim/backup | call mkdir(&backupdir, 'p')
+set directory=\$XDG_STATE_HOME/vim/swap   | call mkdir(&directory, 'p')
+set undodir=\$XDG_STATE_HOME/vim/undo     | call mkdir(&undodir,   'p')
+set viewdir=\$XDG_STATE_HOME/vim/view     | call mkdir(&viewdir,   'p')
 
 " =============================================================================
 " === COLOR SCHEME CONFIGURATION ===
@@ -1224,13 +1232,13 @@ if has('termguicolors')
   set termguicolors
 endif
 
-if !has('nvim') | set viminfofile=$XDG_STATE_HOME/vim/viminfo | endif
+if !has('nvim') | set viminfofile=\$XDG_STATE_HOME/vim/viminfo | endif
 
 " Custom status line configuration
 set statusline=
-set statusline+=\ %F\ %M\ %Y\ %R
+set statusline+=\\ %F\\ %M\\ %Y\\ %R
 set statusline+=%=
-set statusline+=\ ascii:\ %b\ hex:\ 0x%B\ row:\ %l\ col:\ %c\ percent:\ %p%%
+set statusline+=\\ ascii:\\ %b\\ hex:\\ 0x%B\\ row:\\ %l\\ col:\\ %c\\ percent:\\ %p%%
 
 EOF
   fi
@@ -1254,6 +1262,11 @@ EOF
   if [[ ! -f ${HOME}/.config/aws/config ]];
   then
     cat << EOF | tee ${HOME}/.config/aws/config
+# Add new profiles at the bottom manually with
+# [profile NAME]
+# region = eu-central-1
+# output = json
+
 [default]
 region = eu-central-1
 output = json
@@ -1265,6 +1278,11 @@ EOF
     cat << EOF | tee ${HOME}/.config/aws/credentials
 # Configure with:
 # aws configure [sso]
+
+# or add new profiles at the bottom manually with
+# [profile NAME]
+# aws_access_key_id =
+# aws_secret_access_key =
 
 [default]
 aws_access_key_id =
@@ -1389,7 +1407,6 @@ main() {
 
   # Final message
   log "Setup completed successfully\!"
-  log "System files backed up in \"${HOME}/.wsl_setup_backups\""
   log "Next steps:"
   log "   1. Restart WSL with 'wsl --shutdown' from PowerShell"
   log "   2. Upload your public SSH keys to the respective platforms"
