@@ -72,7 +72,7 @@ Set-ExecutionPolicy -Scope CurrentUser Bypass -Force
 iex "& { $(irm https://raw.githubusercontent.com/MarcJose/shell/main/windows/custom.ps1) } -Force"
 ```
 
-If you want to enable certain servicesi n WSL on boot you can execute this as administrator:
+If you want to enable certain services in WSL on boot you can execute this as administrator:
 
 ```powershell
 # Cron

@@ -1001,14 +1001,16 @@ test       │ Test new features or fixes"
 #------------------------------------------------------------------------------
 # AWS profile selector
 export aws_profile() {
-    if [ -f ${AWS_CONFIG_FILE} ]; then
-        profile=$(grep '^\[.*\]' ${AWS_CONFIG_FILE} | sed 's/\[profile \(.*\)\]/\1/;s/\[\(.*\)\]/\1/' | fzf)
+    local config_file="${AWS_CONFIG_FILE:-~/.aws/config}"
+
+    if [ -f "$config_file" ]; then
+        profile=$(grep '^\[profile ' "$config_file" | sed 's/\[profile \(.*\)\]/\1/' | fzf)
         if [ ! -z "$profile" ]; then
             export AWS_PROFILE="$profile"
             echo "AWS Profile set to: $profile"
         fi
     else
-        echo "AWS credentials file not found"
+        echo "AWS config file not found at: $config_file"
         return 1
     fi
 }
@@ -17599,7 +17601,8 @@ alias logins='(sudo find /var/log -type f -name "auth.log" -exec cat {} \+; \
 # Multimedia Processing Aliases
 #------------------------------------------------------------------------------
 # Video compression
-alias mov-compress='for mov in *.mp4; do ffmpeg -hide_banner -loglevel warning -i "${mov}" -preset slow -c:v h264_nvenc -b:v 2M -c:a aac -b:a 128k $(basename "${mov}" ".mp4")_compr.mp4; done'
+alias nv-mov-compress='for mov in *.mp4; do ffmpeg -hide_banner -loglevel warning -i "${mov}" -preset slow -c:v h264_nvenc -b:v 2M -c:a aac -b:a 128k $(basename "${mov}" ".mp4")_compr.mp4 || rm -f "$(basename "${mov}" ".mp4")_compr.mp4"; done'
+alias amd-mov-compress='for mov in *.mp4; do ffmpeg -hide_banner -loglevel warning -vaapi_device /dev/dri/renderD128 -i "${mov}" -vf "format=nv12,hwupload" -c:v hevc_vaapi -b:v 2M -c:a aac -b:a 128k $(basename "${mov}" ".mp4")_compr.mp4 || rm -f "$(basename "${mov}" ".mp4")_compr.mp4"; done'
 # Media download
 alias yt-dl='youtube-dl --quiet --no-call-home --geo-bypass --yes-playlist --hls-prefer-ffmpeg --no-overwrites --continue --audio-quality 0 --embed-thumbnail --add-metadata --prefer-ffmpeg'
 #------------------------------------------------------------------------------

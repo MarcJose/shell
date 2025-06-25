@@ -1266,6 +1266,14 @@ EOF
 # [profile NAME]
 # region = eu-central-1
 # output = json
+# sso_session = NAME
+# sso_account_id = 1234567890
+# sso_role_name = readOnly
+#
+# [sso-session NAME]
+# sso_region = eu-central-1
+# sso_start_url = https://my-sso-portal.awsapps.com/start
+# sso_registration_scopes = sso:account:access
 
 [default]
 region = eu-central-1
@@ -1276,14 +1284,6 @@ EOF
   if [[ ! -f ${HOME}/.config/aws/credentials ]];
   then
     cat << EOF | tee ${HOME}/.config/aws/credentials
-# Configure with:
-# aws configure [sso]
-
-# or add new profiles at the bottom manually with
-# [profile NAME]
-# aws_access_key_id =
-# aws_secret_access_key =
-
 [default]
 aws_access_key_id =
 aws_secret_access_key =
