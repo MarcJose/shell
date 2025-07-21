@@ -393,19 +393,64 @@ fi
 #------------------------------------------------------------------------------
 # Gather various system details for environment setup and monitoring
 # Get operating system
-export OS="$(grep 'PRETTY_NAME' /etc/os-release | cut -d = -f 2 | tr -d '"' | tac | tr '\n' ' ')"
+export OS="$(grep 'PRETTY_NAME' /etc/os-release | cut -d = -f 2 | tr -d '\"')"
 # Current kernel version
 export KERNEL="$(uname --kernel-release)"
-# CPU information: model name from /proc/cpuinfo
-export CPU="$(grep -m 1 'model name' /proc/cpuinfo | awk '{print $4 " " $5 " " $6 " " $7 " " $9 " " $10}')"
-# GPU information: extract from lspci output
-export GPU="$(lspci | grep ' VGA ' | grep -E -o -m 1 '\[.*\]' | cut -c 2- | rev | cut -c 2- | rev)"
+# CPU information: model name and core count
+get_cpu_info() {
+    local cpu_model cores threads
+
+    # Get unique CPU model(s)
+    cpu_model=$(grep 'model name' /proc/cpuinfo | cut -d: -f2 | sed 's/^ *//' | sort -u)
+
+    # Count total cores and threads
+    cores=$(grep -c '^processor' /proc/cpuinfo)
+    threads=$(nproc)
+
+    # Count unique CPU models
+    local cpu_count=$(echo "$cpu_model" | wc -l)
+
+    if [ "$cpu_count" -eq 1 ]; then
+        echo "${cpu_model} (${cores} cores)"
+    else
+        echo "Multiple CPUs: ${cores} total cores"
+        echo "$cpu_model" | sed 's/^/  - /'
+    fi
+}
+export CPU="$(get_cpu_info)"
+# GPU information
+get_gpu_info() {
+    local gpus
+
+    # Try lshw first (your preferred method)
+    if command -v lshw >/dev/null 2>&1; then
+        gpus=$(lshw -C display 2>/dev/null | grep "product:" | sed 's/.*product: //')
+    else
+        # Fallback to lspci
+        gpus=$(lspci | grep -iE "(vga|3d|display)" | sed 's/.*: //')
+    fi
+
+    if [ -z "$gpus" ]; then
+        echo "No GPU detected"
+        return
+    fi
+
+    local gpu_count=$(echo "$gpus" | wc -l)
+
+    if [ "$gpu_count" -eq 1 ]; then
+        echo "$gpus"
+    else
+        echo "Multiple GPUs:"
+        echo "$gpus" | awk '{print "  - GPU " NR-1 ": " $0}'
+    fi
+}
+export GPU="$(get_gpu_info)"
 # RAM size in GB
 export RAM="$(expr "$(grep -m 1 'MemTotal' /proc/meminfo | awk '{print $2}')" / 1000 / 1000)"
-# MAC address of first network interface
-export MAC="$(macchanger -s "$(ls /sys/class/net | awk '{print $1}' | head -n 1)" | head -n 1 | awk '{print $3}')"
 # Public IP address with fallback
-export IP="$(curl -s -m 3  http://my.ip.fi/ || echo 'No connection')"
+export IP="$(curl -s -m 3 http://my.ip.fi/ || echo 'No connection')"
+# MAC address of first network interface
+export MAC="$(macchanger -s "$(ls /sys/class/net | awk '{print $1}' | head -n 1)" 2>/dev/null | head -n 1 | awk '{print $3}' || echo 'Not available')"
 #------------------------------------------------------------------------------
 # Shell Environment Configuration
 #------------------------------------------------------------------------------

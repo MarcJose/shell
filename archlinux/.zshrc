@@ -378,16 +378,17 @@ export FPATH="${XDG_CONFIG_HOME}/zsh/completions:$FPATH"
 #------------------------------------------------------------------------------
 # Display system information on shell startup
 __welcome() {
-  MSG+="Systeminformation:\n"
-  MSG+=" OS:           ${OS}\n"
-  MSG+=" Kernel:       ${KERNEL}\n"
-  MSG+=" CPU:          ${CPU}\n"
-  MSG+=" GPU:          ${GPU}\n"
-  MSG+=" RAM:          ${RAM} GB\n"
-  MSG+=" IP:           ${IP}\n"
-  MSG+=" MAC:          ${MAC}"
+    local MSG=""
+    MSG+="System Information:\n"
+    MSG+=" OS:     ${OS}\n"
+    MSG+=" Kernel: ${KERNEL}\n"
+    MSG+=" CPU:    ${CPU}\n"
+    MSG+=" GPU:    ${GPU}\n"
+    MSG+=" RAM:    ${RAM} GB\n"
+    MSG+=" IP:     ${IP}\n"
+    MSG+=" MAC:    ${MAC}"
 
-  print -P "${MSG}" | cowthink -f /usr/share/cowsay/cows/small.cow -W 500 -n
+    echo -e "${MSG}" | cowthink -f /usr/share/cowsay/cows/small.cow -W 500 -n
 }
 
 # Run updater once after boot
