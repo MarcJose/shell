@@ -184,7 +184,11 @@ export GEM_HOME="${XDG_DATA_HOME}/gem"
 export GEM_SPEC_CACHE="${XDG_CACHE_HOME}/gem"
 # Maven
 export MAVEN_USER_HOME="${XDG_CONFIG_HOME}/maven"
+# NodeJS
 export NVM_DIR="${XDG_DATA_HOME}/nvm"
+export NODE_OPTIONS=--max-old-space-size=8192
+# Next.Js
+export NEXT_MIN_THREADS=2
 #------------------------------------------------------------------------------
 # Cloud and Infrastructure Tools
 #------------------------------------------------------------------------------
@@ -17545,7 +17549,7 @@ alias whatprovides='pkgfile --search'
 alias connections='sudo netstat --tcp --udp -alnp'
 alias running-services='systemctl list-units | grep -E "UNIT.*LOAD.*ACTIVE.*SUB.*DESCRIPTION|running"'
 alias space='df -h --print-type --exclude-type=efivarfs --exclude-type=fuse.sshfs --exclude-type=tmpfs --exclude-type=devtmpfs'
-alias temperature='sensors | grep Package | sed -e '\''s/\+//g'\'' -e '\''s/\..*/\°C/g'\'' | awk '\''{print "CPU: " $4}'\''; echo "GPU: $(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits || aticonfig --od-gettemperature)°C"'
+alias temperature="sensors | grep -E \"(Package|Tctl)\" | sed -e 's/\+//g' -e 's/\..*/\°C/g' | awk '{if (\$1 == \"Tctl:\") print \"CPU: \" \$2; else print \"CPU: \" \$4}'; nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null | head -1 | { read temp; if [ -n \"\$temp\" ]; then echo \"GPU: \${temp}°C\"; else sensors | grep \"edge:\" | head -1 | sed -e 's/\+//g' -e 's/\..*/\°C/g' | awk '{print \"GPU: \" \$2}'; fi; }"
 #------------------------------------------------------------------------------
 # Security and System Check Aliases
 #------------------------------------------------------------------------------
@@ -17645,8 +17649,8 @@ alias logins='(sudo find /var/log -type f -name "auth.log" -exec cat {} \+; \
 # Multimedia Processing Aliases
 #------------------------------------------------------------------------------
 # Video compression
-alias nv-mov-compress='for mov in *.mp4; do ffmpeg -hide_banner -loglevel warning -i "${mov}" -preset slow -c:v h264_nvenc -b:v 2M -c:a aac -b:a 128k $(basename "${mov}" ".mp4")_compr.mp4 || rm -f "$(basename "${mov}" ".mp4")_compr.mp4"; done'
-alias amd-mov-compress='for mov in *.mp4; do ffmpeg -hide_banner -loglevel warning -vaapi_device /dev/dri/renderD128 -i "${mov}" -vf "format=nv12,hwupload" -c:v hevc_vaapi -b:v 2M -c:a aac -b:a 128k $(basename "${mov}" ".mp4")_compr.mp4 || rm -f "$(basename "${mov}" ".mp4")_compr.mp4"; done'
+alias nv-mov-compress='for mov in *.mp4; do ffmpeg -hide_banner -loglevel warning -i "\${mov}" -preset slow -c:v h264_nvenc -b:v 2M -c:a aac -b:a 128k \$(basename "\${mov}" ".mp4")_compr.mp4 || rm -f "\$(basename "\${mov}" ".mp4")_compr.mp4"; done'
+alias amd-mov-compress='for mov in *.mp4; do ffmpeg -hide_banner -loglevel warning -vaapi_device /dev/dri/renderD128 -i "\${mov}" -vf "format=nv12,hwupload" -c:v hevc_vaapi -b:v 2M -c:a aac -b:a 128k \$(basename "\${mov}" ".mp4")_compr.mp4 || rm -f "\$(basename "\${mov}" ".mp4")_compr.mp4"; done'
 # Media download
 alias yt-dl='youtube-dl --quiet --no-call-home --geo-bypass --yes-playlist --hls-prefer-ffmpeg --no-overwrites --continue --audio-quality 0 --embed-thumbnail --add-metadata --prefer-ffmpeg'
 #------------------------------------------------------------------------------
