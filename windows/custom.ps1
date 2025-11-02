@@ -209,53 +209,24 @@ function Install-VSCodeExtensions {
         Write-Status "Installing VSCode extensions..." -Color "Yellow"
 
         $extensions = @(
-            "MS-CEINTL.vscode-language-pack-de",                    # German Language Pack
+            "amazonwebservices.aws-toolkit-vscode",
+            "GitHub.copilot-chat",
             "ms-dotnettools.vscode-dotnet-runtime",
-
-            "VisualStudioExptTeam.vscodeintellicode",
-            "VisualStudioExptTeam.intellicode-api-usage-examples",
-            "VisualStudioExptTeam.vscodeintellicode-completions",
-            "VisualStudioExptTeam.vscodeintellicode-insiders",
-
-            "ms-edgedevtools.vscode-edge-devtools",
-
-            "EditorConfig.EditorConfig",                            # EditorConfig
-            'esbenp.prettier-vscode',                               # Prettier
-            "DavidAnson.vscode-markdownlint",                       # Markdown Linter
-            'wayou.vscode-todo-highlight',                          # TODO Highlight
-            "usernamehw.errorlens",                                 # Error Highlighter
-
-            'ms-vscode-remote.remote-wsl',                          # WSL
-            'ms-vscode-remote.remote-ssh',                          # Remote SSH
-            "ms-vscode-remote.remote-ssh-edit"                      # Remote SSH (Configs)
-            'ms-vscode.remote-explorer',                            # Remote Explorer
-            "tomsaunders.vscode-workspace-explorer",                # Workspace Explorer
-
-            'eamodio.gitlens',                                      # GitLens
-            "github.vscode-github-actions",                         # GitHub Actions
-            "GitHub.vscode-pull-request-github",                    # GitHub Pull Requests
-
-            'ms-kubernetes-tools.vscode-aks-tools',
-            'ms-codespaces-tools.ado-codespaces-auth',
-            'ms-vscode.powershell',                                 # PowerShell
-
-            'ms-vscode.hexeditor',                                  # Hex Editor
-            'redhat.vscode-yaml',                                   # YAML
-            "mechatroner.rainbow-csv",                              # CSV
-            "jock.svg",                                             # SVG
-            "bierner.markdown-checkbox",                            # Markdown Checkboxes
-            "bierner.markdown-emoji",                               # Markdown Emojis
-            "bierner.markdown-footnotes",                           # Markdown Footnotes
-            "bierner.markdown-preview-github-styles",               # Markdown Preview Github
-            "bierner.markdown-mermaid",                             # Markdown Mermaid Diagrams
-            "bierner.markdown-yaml-preamble",                       # Markdown YAML
-            "johnpapa.read-time",                                   # Reading Time
-            "ms-vscode.wordcount",                                  # Word Count
-
-            "ms-vscode.powershell",
-
-            'ms-vscode.live-server',                                # Live Server
-            'ms-vsliveshare.vsliveshare'                            # Live Share
+            "EditorConfig.EditorConfig",
+            "usernamehw.errorlens",
+            "github.vscode-github-actions",
+            "GitHub.copilot",
+            "GitHub.vscode-pull-request-github",
+            "GitHub.remotehub",
+            "DavidAnson.vscode-markdownlint",
+            "christian-kohler.path-intellisense",
+            "mechatroner.rainbow-csv",
+            "ms-vscode-remote.remote-ssh",
+            "ms-vscode-remote.remote-ssh-edit",
+            "ms-vscode.remote-explorer",
+            "ms-vscode.remote-repositories",
+            "Gruntfuggly.todo-tree",
+            "redhat.vscode-yaml"
         )
 
         foreach ($extension in $extensions) {
@@ -316,9 +287,15 @@ processors=${WSL_CPU_CORES}
 networkingMode=mirrored
 "@ | Tee-Object -FilePath "$env:USERPROFILE\.wslconfig"
 
-        # Install Ubuntu 24.04
-        Write-Status "Installing Ubuntu 24.04..."
-        wsl --install -d Ubuntu-24.04
+        # Install Ubuntu
+        Write-Status "Installing Ubuntu..."
+        wsl --install -d Ubuntu
+c
+        # Make sure WSL does resize its disk file
+        $diskPath = (Get-ChildItem `Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss` | Where-Object { $_.GetValue("DistributionName") -eq 'YOUR_DISTRO_NAME' }).GetValue("BasePath") + "\ext4.vhdx"
+        wsl --shutdown
+        optimize-vhd -Path $diskPath -Mode full 
+        wsl --manage Ubuntu --set-sparse true
 
         Write-Status "WSL setup completed successfully. A restart may be required." -Color "Green"
         Write-Status "After restart, Ubuntu will complete its setup on first launch." -Color "Yellow"
