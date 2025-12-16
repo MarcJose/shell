@@ -17434,6 +17434,27 @@ export update_node() {
   echo "Current Node version: $(node -v)"
 }
 
+# Update GH CLI to latest version
+export update_ghcli() {
+  # Fetch latest release tag dynamically
+  VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
+
+  # Download the corresponding tarball
+  curl -LO https://github.com/cli/cli/releases/download/${VERSION}/gh_${VERSION#v}_linux_amd64.tar.gz
+
+  # Extract the tarball
+  tar -xzf gh_${VERSION#v}_linux_amd64.tar.gz
+
+  # Install binary to /usr/local/bin to override any old gh
+  sudo install gh_${VERSION#v}_linux_amd64/bin/gh /usr/local/bin/gh
+
+  # Refresh shell cache
+  hash -r
+
+  # Verify
+  gh --version
+}
+
 #==============================================================================
 # Alias Definitions
 #==============================================================================

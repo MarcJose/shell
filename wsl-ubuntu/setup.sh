@@ -1279,6 +1279,15 @@ EOF
 region = eu-central-1
 output = json
 
+[profile default]
+region = eu-central-1
+output = json
+sso_session = default
+
+[sso-session default]
+sso_region = eu-central-1
+sso_registration_scopes = sso:account:access
+
 EOF
   fi
   if [[ ! -f ${HOME}/.config/aws/credentials ]];
