@@ -1,0 +1,156 @@
+mkdir -p  ~/.config/git
+
+cat <<EOF > ~/.config/git/config
+[alias]
+    # Download a .gitignore template from Toptal for a given language/project
+    ignore = "!gi() { curl -sL https://www.toptal.com/developers/gitignore/api/\$@ ;}; gi"
+
+    # Graphical log with commit hashes, relative dates, author, and refs/decorations
+    glog = !git log --graph --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
+
+    # Detailed log including absolute date, relative date, author info, subject, and decorations
+    tlog = !git log --graph --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''        %C(dim white)= %an <%ae> =%C(reset)%n''        %C(white)%s%C(reset)'
+
+    # Compact commit log with colorized hash, author date, verification status, author, and subject
+    clog = !git log --pretty=format:'[%C(blue)%h%C(reset)][%C(green)%aI%C(reset)][%G?][%an <%ae>] %s'
+
+    # Show a side-by-side diff between two commits (or for specific files)
+    sidediff = "!f() { \
+        if [ \$# -lt 2 ]; then \
+            echo \"Usage: git sidediff <commit1> <commit2> [-- <file_path>]\"; return 1; \
+        fi; \
+        if [ \$# -eq 2 ]; then \
+            git diff \"\$1\" \"\$2\"; \
+        else \
+            if [ \"\$3\" = \"--\" ]; then \
+                git diff \"\$1\" \"\$2\" -- \"\${@:4}\"; \
+            else \
+                git diff \"\$1\" \"\$2\" \"\$3\"; \
+            fi; \
+        fi; \
+    }; f"
+
+    # Short status showing branch, ahead/behind, stashed changes, and renamed files
+    s = status --short --branch --show-stash --ahead-behind --renames
+
+    # Interactive file history selector using fzf
+    # - Lists all added files (`--diff-filter=A`)
+    # - Preview shows the last commit touching that file
+    # - Selecting a file prints its full commit history
+	file-history = "!f() { \
+        git log --all --follow --name-status --pretty=format:\"%h | %an | %ad | \" --date=short -- \
+        \$(git --no-pager log --all --format=format: --name-only --diff-filter=A \
+        | sort -u | fzf --ansi --preview \
+            \"git --no-pager log -n 3 --follow --name-status --pretty=format:'%h | %an | %ad | ' --date=short -- {}\" < /dev/tty); \
+    }; f"
+
+[color]
+    # Enable color output for Git commands when the terminal supports it
+    ui = auto
+    diff = auto
+    branch = auto
+
+[commit]
+    # Enable signing for commits
+    gpgsign = true
+    # Use a custom commit template file
+    template = ~/.config/git/templates/commit_template
+
+[core]
+    # Preserve LF line endings on checkout (do not convert)
+    autocrlf = input
+    # Use Vim as default editor
+    editor = vim
+    # Set default line endings for new files
+    eol = lf
+    # Use delta as pager for enhanced diffs
+    pager = delta
+    # Preload the Git index to speed up status/diff operations
+    preloadIndex = true
+    # Enable filesystem caching to reduce disk access for performance
+    fscache = true
+
+[credential "https://dev.azure.com"]
+    # Include the path in credential matching
+    useHttpPath = true
+
+[delta]
+    # Enable navigation in side-by-side diffs
+    navigate = true
+    side-by-side = true
+    # Show line numbers
+    line-numbers = true
+
+[diff]
+    # Color moved lines in diffs
+    colorMoved = default
+    # Increase rename detection limit
+    renamelimit = 99999
+
+[filter "lfs"]
+    # Enable Git LFS for large files
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+
+[fetch]
+    prune = true
+
+[gpg]
+    # Use OpenPGP format
+    format = openpgp
+[gpg "openpgp"]
+    program = gpg
+[gpg "x509"]
+    program = gpgsm
+
+[http]
+    # Increase HTTP post buffer to avoid large push failures
+    postBuffer = 524288000
+
+[init]
+    # Default branch name for new repos
+    defaultBranch = main
+    # Template directory for hooks
+    templatedir = ~/.config/git/hooks
+
+[interactive]
+    # Use delta for color-only diffs in interactive commands
+    diffFilter = delta --color-only
+
+[pull]
+    # Only fast-forward pulls; rebase by default
+    ff = only
+    rebase = true
+
+[push]
+    # Automatically set up remote tracking on push
+    autoSetupRemote = true
+
+[rebase]
+    # Auto-stash changes before rebasing
+    autoStash = true
+
+[remote "origin"]
+    # Automatically prune deleted remote branches
+    prune = true
+
+[rerere]
+    # Reuse recorded conflict resolutions
+    enabled = true
+
+[tag]
+    # Enable signing for tags
+    gpgSign = true
+
+[user]
+    # Git author identity
+    name = Firstname Lastname
+    email = email@example.org
+
+[help]
+    # Auto-correct minor mistakes in Git commands after 30 centiseconds
+    autocorrect = 30
+
+EOF
