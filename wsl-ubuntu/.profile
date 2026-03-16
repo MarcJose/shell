@@ -17415,15 +17415,13 @@ export update_node() {
   # List all installed versions and remove older ones except current LTS and latest stable
   echo "Cleaning up old versions..."
   while IFS= read -r version; do
-    # Clean up the version string
-    cleaned_version=$(echo "${version}" | sed 's/[->, ]//g')
     # Skip if it's the latest LTS or latest stable
-    if [ "${cleaned_version}" != "${latest_lts}" ] && [ "${cleaned_version}" != "${latest_stable}" ]; #
+    if [ "${version}" != "${latest_lts}" ] && [ "${version}" != "${latest_stable}" ]; #
     then
-      echo "Removing version ${cleaned_version}"
-      nvm uninstall "${cleaned_version}"
+      echo "Removing version ${version}"
+      nvm uninstall "${version}"
     fi
-  done <<(nvm ls --no-colors --no-alias | grep "v")
+  done <<(nvm ls --no-colors --no-alias | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+')
 
   # Switch back to LTS as the active version
   nvm use --silent --lts
@@ -17767,6 +17765,9 @@ alias size='du -sch 2> /dev/null'
 alias watch='watch '
 # LibreOffice Fix
 alias libreoffice='LD_PRELOAD=/usr/lib/libfreetype.so libreoffice'
+# Unset VIMINIT to prevent conflicts with custom vim configurations
+alias nvim='env -u VIMINIT nvim'
+alias vim='let $MYVIMRC="${XDG_CONFIG_HOME}/vim/vimrc" | source ${MYVIMRC}; vim'
 
 
 #------------------------------------------------------------------------------
