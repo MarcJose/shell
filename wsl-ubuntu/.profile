@@ -17580,6 +17580,7 @@ alias full-scan='sudo nmap -p 1-65535 -sT -sU -A -sV'
 # Scan all ports; TCP ports; UDP ports
 alias quick-scan='sudo nmap -p 1-65535 -sT -sU'
 alias vuln-scan='sudo nmap -p 1-65535 -sT -sU -Pn --script vuln -sV --script=http-malware-host --script http-google-malware'
+alias ports="sudo ss -tulpn | sed -E 's/users:\(\("([^"]+)".*/\1/' | column -t"
 #------------------------------------------------------------------------------
 # File Operation Aliases
 #------------------------------------------------------------------------------
