@@ -1565,7 +1565,6 @@ update_ghcli() {
 alias abook='abook --config "${XDG_CONFIG_HOME}/abook/abookrc" --datafile "${XDG_DATA_HOME}/abook/addressbook"'
 alias bashdb='bashdb -x ${XDG_CONFIG_HOME:-$HOME/.config}/bashdb/bashdbinit'
 alias cargo='cargo --config "${XDG_CONFIG_HOME}/cargo/config"'
-alias gem='gem --config-file "${XDG_CONFIG_HOME}/gem/config"'
 alias mvn='mvn -gs "${XDG_CONFIG_HOME}/maven/settings.xml"'
 alias npm='npm --userconfig "${XDG_CONFIG_HOME}/npm/npmrc"'
 # Shell and Terminal
