@@ -180,7 +180,7 @@ export GRADLE_USER_HOME="${XDG_DATA_HOME}/gradle"
 # Rust/Cargo
 export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 # Ruby gems
-export GEM_HOME="${XDG_DATA_HOME}/gem"
+#export GEM_HOME="${XDG_DATA_HOME}/gem"
 export GEM_SPEC_CACHE="${XDG_CACHE_HOME}/gem"
 # Maven
 export MAVEN_USER_HOME="${XDG_CONFIG_HOME}/maven"
