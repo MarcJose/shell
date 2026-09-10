@@ -27,6 +27,20 @@ on:
     - cron: "23 5 * * 0"
   workflow_dispatch:
 
+# Die run:-Blöcke laufen mit bash, nicht mit der Vorgabe.
+#
+# Ohne das führt der Runner sie im Job-Container mit `sh -e` aus, und auf
+# Ubuntu ist /bin/sh dash. Dash kennt kein `pipefail`, also stirbt jeder Step
+# an seiner ersten Zeile:
+#
+#   /__w/_temp/….sh: 1: set: Illegal option -o pipefail
+#
+# Gemessen am 10.09.2026 in MarcJose/cora, Job trufflehog. bash liegt in
+# ubuntu:24.04 bereits vor, es muss nur ausgewählt werden.
+defaults:
+  run:
+    shell: bash
+
 # Der Runner führt Workflow-Code auf dem eigenen Node aus. Das Token bekommt
 # nur, was zum Lesen des Repositories nötig ist.
 permissions:
