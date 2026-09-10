@@ -1,0 +1,18 @@
+# Die Namen der Self-hosted-Runner-Pools.
+#
+# Ohne diese Liste hält actionlint jedes `runs-on: homelab-*` für einen Tippfehler
+# und meldet es — die echten Befunde gingen darin unter. Ein Pool je Repository
+# mit CI; die Namen sind die releaseName-Werte der gha-runner-scale-set-Releases
+# in apps/platform/github-arc-runners-*.yaml des Cluster-Repos.
+self-hosted-runner:
+  labels:
+    - homelab-argocd
+    - homelab-az-gh-sync
+    - homelab-cora
+    - homelab-mirage
+    - homelab-punch
+    - homelab-python-depscan
+    - homelab-rift
+    - homelab-shell
+    - homelab-sp-shop
+    - homelab-streamrecorder

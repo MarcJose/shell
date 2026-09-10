@@ -1,0 +1,189 @@
+# Geheimnisse und Code-Schwachstellen, auf dem eigenen Cluster gescannt.
+#
+# Drei Werkzeuge, die sich absichtlich überschneiden: gitleaks liest die
+# Git-Historie mit Regeln, TruffleHog prüft Fundstellen gegen den Anbieter
+# nach, Semgrep liest den Quelltext statt der Historie. Dieselbe Aufteilung
+# wie in scripts/scan.sh im Cluster-Repo.
+#
+# Drei Randbedingungen kommen vom Runner, nicht von den Werkzeugen:
+#
+#   1. ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER=true — jeder Job MUSS ein
+#      container: haben, sonst schlägt er fehl, bevor ein Step läuft.
+#   2. containerMode ist kubernetes, es gibt keinen Docker-Daemon. Actions,
+#      die intern `docker run` aufrufen, funktionieren hier nicht — daher
+#      werden alle Werkzeuge als Binary geladen statt als Action eingebunden.
+#   3. Das Job-Image darf kein Alpine sein. JS-Actions wie actions/checkout
+#      laufen mit dem Node, das der Runner aus seinen externals in den
+#      Job-Container mountet, und das ist gegen glibc gelinkt; unter musl
+#      startet es nicht.
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Sonntagmorgens, versetzt zum Cluster-Scan.
+    - cron: "23 5 * * 0"
+  workflow_dispatch:
+
+# Der Runner führt Workflow-Code auf dem eigenen Node aus. Das Token bekommt
+# nur, was zum Lesen des Repositories nötig ist.
+permissions:
+  contents: read
+
+# Zehn Scale-Sets teilen sich ein Node-Budget (ResourceQuota in
+# manifests/arc/). Ein überholter Lauf blockiert davon nichts mehr.
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # renovate: datasource=github-releases depName=gitleaks/gitleaks
+  GITLEAKS_VERSION: 8.30.1
+  # renovate: datasource=github-releases depName=trufflesecurity/trufflehog
+  TRUFFLEHOG_VERSION: 3.97.4
+  # renovate: datasource=pypi depName=semgrep
+  SEMGREP_VERSION: 1.176.0
+
+jobs:
+  gitleaks:
+    # Kein fremder Fork auf dem eigenen Node.
+    #
+    # Ohne diese Bedingung führt ein Pull Request aus einem beliebigen Fork
+    # Workflow-Code auf dem Cluster aus — bei den öffentlichen Repositories
+    # (shell, mirage) ist das ein offener Weg hinein, und GitHub rät von
+    # Self-hosted-Runnern an öffentlichen Repositories genau deshalb ab.
+    # Der Vergleich lässt nur Branches aus diesem Repository selbst zu;
+    # Fork-PRs überspringen den Job sichtbar, statt ihn stillschweigend
+    # auszuführen. Steht bewusst auch in den privaten Repositories, damit die
+    # Datei überall dieselbe ist.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: homelab-shell
+    container:
+      image: ubuntu:24.04
+    steps:
+      - name: Basis-Image ausstatten
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends ca-certificates curl git
+
+      # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
+      # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Der ganze Punkt an gitleaks: Ein Credential, das committet und
+          # später wieder entfernt wurde, bleibt in der Historie erreichbar.
+          # Ein flacher Klon sähe genau das nicht.
+          fetch-depth: 0
+
+      - name: gitleaks
+        run: |
+          set -euo pipefail
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+          # actions/checkout legt das Arbeitsverzeichnis unter anderer UID an,
+          # als der Container läuft; ohne das verweigert git den Zugriff.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          # Liegt eine .gitleaks.toml im Repository, nimmt gitleaks sie von
+          # selbst — die Ausnahmen bleiben also beim Repository, nicht hier.
+          gitleaks git . --redact --verbose
+
+  trufflehog:
+    # Kein fremder Fork auf dem eigenen Node.
+    #
+    # Ohne diese Bedingung führt ein Pull Request aus einem beliebigen Fork
+    # Workflow-Code auf dem Cluster aus — bei den öffentlichen Repositories
+    # (shell, mirage) ist das ein offener Weg hinein, und GitHub rät von
+    # Self-hosted-Runnern an öffentlichen Repositories genau deshalb ab.
+    # Der Vergleich lässt nur Branches aus diesem Repository selbst zu;
+    # Fork-PRs überspringen den Job sichtbar, statt ihn stillschweigend
+    # auszuführen. Steht bewusst auch in den privaten Repositories, damit die
+    # Datei überall dieselbe ist.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: homelab-shell
+    container:
+      image: ubuntu:24.04
+    steps:
+      - name: Basis-Image ausstatten
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends ca-certificates curl git
+
+      # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
+      # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog
+        run: |
+          set -euo pipefail
+          curl -sSfL "https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz" \
+            | tar -xz -C /usr/local/bin trufflehog
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          # --results=verified heißt: TruffleHog fragt beim jeweiligen Anbieter
+          # nach, ob das gefundene Credential noch gültig ist.
+          #
+          # Im Cluster-Repo ist genau das per --verify bewusst abschaltbar
+          # gehalten, weil es Kandidaten nach außen gibt. Hier läuft es
+          # trotzdem an, und zwar mit Absicht: Ohne die Nachprüfung bleibt von
+          # TruffleHog wenig übrig, was gitleaks nicht schon abdeckt, und die
+          # Offenlegung geht an den Anbieter des Credentials selbst — also
+          # dorthin, wo es ohnehin gilt. Wer das nicht will, hängt
+          # --no-verification an; dann meldet der Lauf ungeprüfte Kandidaten.
+          trufflehog git "file://$GITHUB_WORKSPACE" \
+            --results=verified \
+            --no-update \
+            --fail
+
+  semgrep:
+    # Kein fremder Fork auf dem eigenen Node.
+    #
+    # Ohne diese Bedingung führt ein Pull Request aus einem beliebigen Fork
+    # Workflow-Code auf dem Cluster aus — bei den öffentlichen Repositories
+    # (shell, mirage) ist das ein offener Weg hinein, und GitHub rät von
+    # Self-hosted-Runnern an öffentlichen Repositories genau deshalb ab.
+    # Der Vergleich lässt nur Branches aus diesem Repository selbst zu;
+    # Fork-PRs überspringen den Job sichtbar, statt ihn stillschweigend
+    # auszuführen. Steht bewusst auch in den privaten Repositories, damit die
+    # Datei überall dieselbe ist.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: homelab-shell
+    container:
+      image: ubuntu:24.04
+    steps:
+      - name: Basis-Image ausstatten
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends ca-certificates curl git python3-venv
+
+      # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
+      # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Semgrep
+        run: |
+          set -euo pipefail
+          # Ubuntu 24.04 ist PEP-668-verwaltet, ein globales pip install wird
+          # abgewiesen. Ein venv ist der vorgesehene Weg, nicht
+          # --break-system-packages.
+          python3 -m venv /opt/semgrep
+          /opt/semgrep/bin/pip install --quiet "semgrep==${SEMGREP_VERSION}"
+          # Feste Regelsätze statt --config=auto: auto entscheidet auf der
+          # Gegenseite, was geprüft wird, und das ändert sich ohne Commit hier.
+          # --metrics=off, weil Registry-Regeln sonst Telemetrie senden.
+          /opt/semgrep/bin/semgrep scan \
+            --config=p/security-audit \
+            --config=p/secrets \
+            --metrics=off \
+            --error

@@ -1,0 +1,93 @@
+# Statische Analyse gegen die SonarQube-Instanz im eigenen Cluster.
+#
+# Der Weg dorthin ist clusterintern und nicht über das Internet: Der Ingress
+# von SonarQube ist internal-only, erreichbar ist der Dienst nur über seinen
+# Service. Die CiliumNetworkPolicy in manifests/network-policies/arc-runners.yaml
+# lässt aus dem Runner-Namespace genau diesen einen Weg heraus — ein Ziel, ein
+# Port, eine Richtung. Ohne diese Regel läuft der Scanner in einen Timeout.
+#
+# Voraussetzungen je Repository:
+#   - Repository-Secret SONAR_TOKEN (SonarQube: My Account > Security >
+#     Generate Token, Typ "Global Analysis Token").
+#   - SonarQube legt das Projekt beim ersten Lauf selbst an, wenn das Token
+#     "Create Projects" darf.
+name: SonarQube
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sonarqube-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # renovate: datasource=github-releases depName=SonarSource/sonar-scanner-cli
+  SONAR_SCANNER_VERSION: 8.1.0.6389
+
+jobs:
+  sonarqube:
+    # Kein fremder Fork auf dem eigenen Node.
+    #
+    # Ohne diese Bedingung führt ein Pull Request aus einem beliebigen Fork
+    # Workflow-Code auf dem Cluster aus — bei den öffentlichen Repositories
+    # (shell, mirage) ist das ein offener Weg hinein, und GitHub rät von
+    # Self-hosted-Runnern an öffentlichen Repositories genau deshalb ab.
+    # Der Vergleich lässt nur Branches aus diesem Repository selbst zu;
+    # Fork-PRs überspringen den Job sichtbar, statt ihn stillschweigend
+    # auszuführen. Steht bewusst auch in den privaten Repositories, damit die
+    # Datei überall dieselbe ist.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: homelab-shell
+    container:
+      image: ubuntu:24.04
+    steps:
+      - name: Basis-Image ausstatten
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends ca-certificates curl git unzip
+
+      # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
+      # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # SonarQube ordnet Befunde über git blame einem Autor und einem Datum
+          # zu. Ohne Historie landet alles auf dem letzten Commit und die
+          # "neuer Code"-Auswertung wird wertlos.
+          fetch-depth: 0
+
+      - name: SonarQube-Analyse
+        env:
+          # Service sonarqube-sonarqube im Namespace sonarqube, Port 9000 —
+          # aus dem gerenderten Chart abgelesen, nicht geraten.
+          SONAR_HOST_URL: http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SONAR_TOKEN:-}" ]; then
+            echo "::error::SONAR_TOKEN ist nicht gesetzt. Ohne Token lehnt SonarQube die Analyse ab."
+            exit 1
+          fi
+          curl -sSfLo /tmp/scanner.zip \
+            "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip"
+          unzip -q /tmp/scanner.zip -d /opt
+          # Der Ordnername im Archiv trägt die Version, aber ohne "cli" - per
+          # Glob auflösen statt ihn zusammenzusetzen.
+          scanner="$(printf '%s' /opt/sonar-scanner-*-linux-x64/bin/sonar-scanner)"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          # projectKey aus dem Repository-Namen: Damit ist diese Datei in jedem
+          # Repository identisch und muss beim Kopieren nur bei runs-on
+          # angefasst werden.
+          "$scanner" \
+            -Dsonar.projectKey="${{ github.event.repository.name }}" \
+            -Dsonar.projectName="${{ github.event.repository.name }}" \
+            -Dsonar.sources=. \
+            -Dsonar.scm.provider=git
