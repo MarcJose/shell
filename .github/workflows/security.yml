@@ -77,14 +77,25 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: homelab-shell
     container:
-      image: ubuntu:24.04
+      # Gepinnt auf den Digest, nicht auf ein Tag: ein Tag laesst sich
+      # umhaengen, ein Digest nicht. Gebaut von .github/workflows/
+      # ci-base-image.yml im Repository h2868358.stratoserver.net; der Build
+      # schreibt die Zeile ins Job-Summary. Renovate hebt den Digest an.
+      #
+      # Das Image bringt ca-certificates, curl, git, unzip, jq, python3 und
+      # python3-venv mit. Bis zum 12.09.2026 stand hier ein nacktes
+      # ubuntu-Image und jeder Job installierte sie selbst - gemessen 48 von
+      # 103 Sekunden Laufzeit, je Job.
+      #
+      # Die Repositories standen dabei auf unterschiedlichen Ubuntu-Fassungen
+      # (dieses auf 26.04, die neun anderen auf 24.04). Das gemeinsame Image
+      # vereinheitlicht sie auf 26.04. Vorher geprueft, weil es genau einen
+      # heiklen Punkt gab: semgrep wird per pip in eine venv installiert, und
+      # ohne passendes Wheel haette pip aus dem Quelltext bauen muessen. In
+      # ubuntu:26.04 laeuft Python 3.14.4, und semgrep 1.176.0 installiert
+      # dort sauber - gemessen am 12.09.2026 in einem Container.
+      image: ghcr.io/marcjose/h2868358.stratoserver.net/ci-base@sha256:6de09e7cfb219d0ff730b52c5a99f1893f7a14b947d15dbfba322e1e13e7409d
     steps:
-      - name: Basis-Image ausstatten
-        run: |
-          set -euo pipefail
-          apt-get update -qq
-          apt-get install -y -qq --no-install-recommends ca-certificates curl git
-
       # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
       # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -122,14 +133,25 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: homelab-shell
     container:
-      image: ubuntu:24.04
+      # Gepinnt auf den Digest, nicht auf ein Tag: ein Tag laesst sich
+      # umhaengen, ein Digest nicht. Gebaut von .github/workflows/
+      # ci-base-image.yml im Repository h2868358.stratoserver.net; der Build
+      # schreibt die Zeile ins Job-Summary. Renovate hebt den Digest an.
+      #
+      # Das Image bringt ca-certificates, curl, git, unzip, jq, python3 und
+      # python3-venv mit. Bis zum 12.09.2026 stand hier ein nacktes
+      # ubuntu-Image und jeder Job installierte sie selbst - gemessen 48 von
+      # 103 Sekunden Laufzeit, je Job.
+      #
+      # Die Repositories standen dabei auf unterschiedlichen Ubuntu-Fassungen
+      # (dieses auf 26.04, die neun anderen auf 24.04). Das gemeinsame Image
+      # vereinheitlicht sie auf 26.04. Vorher geprueft, weil es genau einen
+      # heiklen Punkt gab: semgrep wird per pip in eine venv installiert, und
+      # ohne passendes Wheel haette pip aus dem Quelltext bauen muessen. In
+      # ubuntu:26.04 laeuft Python 3.14.4, und semgrep 1.176.0 installiert
+      # dort sauber - gemessen am 12.09.2026 in einem Container.
+      image: ghcr.io/marcjose/h2868358.stratoserver.net/ci-base@sha256:6de09e7cfb219d0ff730b52c5a99f1893f7a14b947d15dbfba322e1e13e7409d
     steps:
-      - name: Basis-Image ausstatten
-        run: |
-          set -euo pipefail
-          apt-get update -qq
-          apt-get install -y -qq --no-install-recommends ca-certificates curl git
-
       # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
       # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -173,14 +195,25 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: homelab-shell
     container:
-      image: ubuntu:24.04
+      # Gepinnt auf den Digest, nicht auf ein Tag: ein Tag laesst sich
+      # umhaengen, ein Digest nicht. Gebaut von .github/workflows/
+      # ci-base-image.yml im Repository h2868358.stratoserver.net; der Build
+      # schreibt die Zeile ins Job-Summary. Renovate hebt den Digest an.
+      #
+      # Das Image bringt ca-certificates, curl, git, unzip, jq, python3 und
+      # python3-venv mit. Bis zum 12.09.2026 stand hier ein nacktes
+      # ubuntu-Image und jeder Job installierte sie selbst - gemessen 48 von
+      # 103 Sekunden Laufzeit, je Job.
+      #
+      # Die Repositories standen dabei auf unterschiedlichen Ubuntu-Fassungen
+      # (dieses auf 26.04, die neun anderen auf 24.04). Das gemeinsame Image
+      # vereinheitlicht sie auf 26.04. Vorher geprueft, weil es genau einen
+      # heiklen Punkt gab: semgrep wird per pip in eine venv installiert, und
+      # ohne passendes Wheel haette pip aus dem Quelltext bauen muessen. In
+      # ubuntu:26.04 laeuft Python 3.14.4, und semgrep 1.176.0 installiert
+      # dort sauber - gemessen am 12.09.2026 in einem Container.
+      image: ghcr.io/marcjose/h2868358.stratoserver.net/ci-base@sha256:6de09e7cfb219d0ff730b52c5a99f1893f7a14b947d15dbfba322e1e13e7409d
     steps:
-      - name: Basis-Image ausstatten
-        run: |
-          set -euo pipefail
-          apt-get update -qq
-          apt-get install -y -qq --no-install-recommends ca-certificates curl git python3-venv
-
       # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
       # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
