@@ -77,10 +77,14 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: homelab-shell
     container:
-      # Gepinnt auf den Digest, nicht auf ein Tag: ein Tag laesst sich
-      # umhaengen, ein Digest nicht. Gebaut im Repository MarcJose/ci-base;
-      # der Build schreibt die Zeile ins Job-Summary. Renovate hebt den
-      # Digest an.
+      # Gepinnt auf den Digest: ein Tag laesst sich umhaengen, ein Digest
+      # nicht. Gebaut im Repository MarcJose/ci-base; der Build schreibt die
+      # Zeile ins Job-Summary.
+      #
+      # Das Tag davor ist trotzdem noetig, gezogen wird es nie. Es sagt
+      # Renovate, welchem Tag der Digest folgt. Ohne Tag fragt Renovate
+      # `latest` ab, das dieses Paket nicht hat ("Could not determine new
+      # digest", 14.09.2026) - der Digest waere nie mehr angehoben worden.
       #
       # Das Image bringt ca-certificates, curl, git, unzip, jq, python3 und
       # python3-venv mit. Bis zum 12.09.2026 stand hier ein nacktes
@@ -94,7 +98,7 @@ jobs:
       # ohne passendes Wheel haette pip aus dem Quelltext bauen muessen. In
       # ubuntu:26.04 laeuft Python 3.14.4, und semgrep 1.176.0 installiert
       # dort sauber - gemessen am 12.09.2026 in einem Container.
-      image: ghcr.io/marcjose/ci-base@sha256:ebb7fb67e14d0e0125f90fc773610477d901df5a18abe1a5771748dc9d84453f
+      image: ghcr.io/marcjose/ci-base:26.04@sha256:ebb7fb67e14d0e0125f90fc773610477d901df5a18abe1a5771748dc9d84453f
     steps:
       # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
       # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
@@ -133,10 +137,14 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: homelab-shell
     container:
-      # Gepinnt auf den Digest, nicht auf ein Tag: ein Tag laesst sich
-      # umhaengen, ein Digest nicht. Gebaut im Repository MarcJose/ci-base;
-      # der Build schreibt die Zeile ins Job-Summary. Renovate hebt den
-      # Digest an.
+      # Gepinnt auf den Digest: ein Tag laesst sich umhaengen, ein Digest
+      # nicht. Gebaut im Repository MarcJose/ci-base; der Build schreibt die
+      # Zeile ins Job-Summary.
+      #
+      # Das Tag davor ist trotzdem noetig, gezogen wird es nie. Es sagt
+      # Renovate, welchem Tag der Digest folgt. Ohne Tag fragt Renovate
+      # `latest` ab, das dieses Paket nicht hat ("Could not determine new
+      # digest", 14.09.2026) - der Digest waere nie mehr angehoben worden.
       #
       # Das Image bringt ca-certificates, curl, git, unzip, jq, python3 und
       # python3-venv mit. Bis zum 12.09.2026 stand hier ein nacktes
@@ -150,7 +158,7 @@ jobs:
       # ohne passendes Wheel haette pip aus dem Quelltext bauen muessen. In
       # ubuntu:26.04 laeuft Python 3.14.4, und semgrep 1.176.0 installiert
       # dort sauber - gemessen am 12.09.2026 in einem Container.
-      image: ghcr.io/marcjose/ci-base@sha256:ebb7fb67e14d0e0125f90fc773610477d901df5a18abe1a5771748dc9d84453f
+      image: ghcr.io/marcjose/ci-base:26.04@sha256:ebb7fb67e14d0e0125f90fc773610477d901df5a18abe1a5771748dc9d84453f
     steps:
       # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
       # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
@@ -195,10 +203,14 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: homelab-shell
     container:
-      # Gepinnt auf den Digest, nicht auf ein Tag: ein Tag laesst sich
-      # umhaengen, ein Digest nicht. Gebaut im Repository MarcJose/ci-base;
-      # der Build schreibt die Zeile ins Job-Summary. Renovate hebt den
-      # Digest an.
+      # Gepinnt auf den Digest: ein Tag laesst sich umhaengen, ein Digest
+      # nicht. Gebaut im Repository MarcJose/ci-base; der Build schreibt die
+      # Zeile ins Job-Summary.
+      #
+      # Das Tag davor ist trotzdem noetig, gezogen wird es nie. Es sagt
+      # Renovate, welchem Tag der Digest folgt. Ohne Tag fragt Renovate
+      # `latest` ab, das dieses Paket nicht hat ("Could not determine new
+      # digest", 14.09.2026) - der Digest waere nie mehr angehoben worden.
       #
       # Das Image bringt ca-certificates, curl, git, unzip, jq, python3 und
       # python3-venv mit. Bis zum 12.09.2026 stand hier ein nacktes
@@ -212,7 +224,7 @@ jobs:
       # ohne passendes Wheel haette pip aus dem Quelltext bauen muessen. In
       # ubuntu:26.04 laeuft Python 3.14.4, und semgrep 1.176.0 installiert
       # dort sauber - gemessen am 12.09.2026 in einem Container.
-      image: ghcr.io/marcjose/ci-base@sha256:ebb7fb67e14d0e0125f90fc773610477d901df5a18abe1a5771748dc9d84453f
+      image: ghcr.io/marcjose/ci-base:26.04@sha256:ebb7fb67e14d0e0125f90fc773610477d901df5a18abe1a5771748dc9d84453f
     steps:
       # Auf den Commit gepinnt, nicht auf das bewegliche Tag: Ein Tag lässt
       # sich umhängen, ein SHA nicht. Renovate hebt beides gemeinsam an.
